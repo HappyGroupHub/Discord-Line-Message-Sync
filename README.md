@@ -1,5 +1,5 @@
 # Discord Line Message Sync
 
-## A bot that foward messages from Discord to Line
+## A bot that forward messages from Discord to Line
 
 to be edited...
