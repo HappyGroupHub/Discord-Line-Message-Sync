@@ -18,8 +18,12 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    if message.content.startswith("!hello"):
-        await message.channel.send("Hello!")
+    if message.channel.id == int(utils.read_config().get('discord_channel_id')):
+        if message.content.startswith("!test"):
+            reply_message = "test"
+            await message.channel.send(reply_message)
+    else:
+        return
 
 
 client.run(utils.read_config().get('discord_bot_token'))

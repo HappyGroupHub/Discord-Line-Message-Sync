@@ -20,7 +20,8 @@ def read_config():
             config = {
                 'line_channel_secret': data['Line']['channel_secret'],
                 'line_channel_access_token': data['Line']['channel_access_token'],
-                'discord_bot_token': data['Discord']['bot_token']
+                'discord_bot_token': data['Discord']['bot_token'],
+                'discord_channel_id': data['Discord']['channel_id']
             }
             return config
     except FileNotFoundError:
@@ -28,7 +29,7 @@ def read_config():
         with open('config.yml', 'w', encoding="utf8") as f:
             f.write(
                 "Line:\n  channel_access_token: ''\n  channel_secret: ''\n"
-                "Discord:\n  bot_token: ''")
+                "Discord:\n  bot_token: ''\n channel_id: ''\n")
         sys.exit()
     except (KeyError, TypeError):
         print(
