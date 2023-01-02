@@ -1,4 +1,8 @@
 """This python file will handle line webhooks."""
+import json
+from threading import Thread
+
+import zmq
 from discord import SyncWebhook
 from flask import Flask, request, abort
 from flask.logging import create_logger
@@ -15,6 +19,11 @@ discord_webhook = SyncWebhook.from_url(config.get('discord_channel_webhook'))
 
 app = Flask(__name__)
 log = create_logger(app)
+
+context = zmq.Context()
+socket = context.socket(zmq.SUB)
+socket.connect("tcp://localhost:5555")
+socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
 
 @app.route("/callback", methods=['POST'])
@@ -52,6 +61,18 @@ def handle_message(event):
         print("This message is not from a group.")
         pass
 
+
+def receive_from_discord():
+    """Receive message from discord bot."""
+    while True:
+        received = socket.recv_json()
+        received = json.loads(received)
+        line_bot_api.push_message(config.get('line_group_id'),
+                                  TextMessage(text=f"{received.get('author')}: {received.get('message')}"))
+
+
+thread = Thread(target=receive_from_discord)
+thread.start()
 
 if __name__ == "__main__":
     app.run()
