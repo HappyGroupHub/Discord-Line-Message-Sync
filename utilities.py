@@ -38,3 +38,12 @@ def read_config():
             "An error occurred while reading config.yml, please check if the file is corrected filled.\n"
             "If the problem can't be solved, consider delete config.yml and restart the program.\n")
         sys.exit()
+
+
+def get_discord_webhook_id():
+    """Get discord webhook id.
+
+    :rtype: int
+    """
+    webhook_url = read_config().get('discord_channel_webhook')
+    return int(webhook_url.split('/')[-2])
