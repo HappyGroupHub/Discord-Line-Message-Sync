@@ -20,6 +20,9 @@ def read_config():
             config = {
                 'line_channel_secret': data['Line']['channel_secret'],
                 'line_channel_access_token': data['Line']['channel_access_token'],
+                'line_notify_token': data['Line']['line_notify_token'],
+                'line_chat_type': data['Line']['chat_type'],
+                'line_user_id': data['Line']['user_id'],
                 'line_group_id': data['Line']['group_id'],
                 'discord_bot_token': data['Discord']['bot_token'],
                 'discord_channel_id': data['Discord']['channel_id'],
@@ -30,7 +33,11 @@ def read_config():
         print("Config file not found, create one by default.\nPlease finish filling config.yml")
         with open('config.yml', 'w', encoding="utf8") as f:
             f.write(
-                "Line:\n  channel_access_token: ''\n  channel_secret: ''\n  group_id: ''\n"
+                "Line:\n  channel_access_token: ''\n  channel_secret: ''\n  line_notify_token: ''\n"
+                "\n  # 以下為聊天室綁定設定:\n  # 聊天室屬性, 目前只有私人訊息以及群組訊息兩種 (user, group)\n"
+                "  chat_type: ''\n\n  # 私人訊息: 請在user_id填入你的line_user_id\n"
+                "  # 群組訊息: 請在group_id填入你的群組id\n  # 一次只能填入一個id, 填寫一個後另一個留空\n"
+                "  user_id: ''\n  group_id: ''\n"
                 "Discord:\n  bot_token: ''\n channel_id: ''\n  channel_webhook: ''\n")
         sys.exit()
     except (KeyError, TypeError):
