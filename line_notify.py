@@ -8,8 +8,10 @@ config = utils.read_config()
 
 
 def send_message(message):
-    """Send message to LINE Notify."""
+    """Send message to LINE Notify.
 
+    :param str message: Message to send.
+    """
     token = config.get('line_notify_token')
     headers = {"Authorization": "Bearer " + token}
     data = {'message': message}
@@ -18,8 +20,11 @@ def send_message(message):
 
 
 def send_image_message(message, image_path):
-    """Send image message to LINE Notify."""
+    """Send image message to LINE Notify.
 
+    :param str message: Message to send.
+    :param str image_path: Path to image.
+    """
     token = config.get('line_notify_token')
     headers = {"Authorization": "Bearer " + token}
     data = {'message': message}

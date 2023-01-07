@@ -1,4 +1,5 @@
 """This python file will handle line webhooks."""
+
 import json
 from threading import Thread
 
@@ -68,7 +69,8 @@ def receive_from_discord():
         received = socket.recv_json()
         received = json.loads(received)
         line_bot_api.push_message(config.get('line_group_id'),
-                                  TextMessage(text=f"{received.get('author')}: {received.get('message')}"))
+                                  TextMessage(
+                                      text=f"{received.get('author')}: {received.get('message')}"))
 
 
 thread = Thread(target=receive_from_discord)
