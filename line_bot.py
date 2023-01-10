@@ -1,9 +1,9 @@
 """This python file will handle line webhooks."""
 
 import json
-from threading import Thread
-
-import zmq
+# from threading import Thread
+#
+# import zmq
 from discord import SyncWebhook
 from flask import Flask, request, abort
 from flask.logging import create_logger
@@ -21,10 +21,11 @@ discord_webhook = SyncWebhook.from_url(config.get('discord_channel_webhook'))
 app = Flask(__name__)
 log = create_logger(app)
 
-context = zmq.Context()
-socket = context.socket(zmq.SUB)
-socket.connect("tcp://localhost:5555")
-socket.setsockopt_string(zmq.SUBSCRIBE, '')
+
+# context = zmq.Context()
+# socket = context.socket(zmq.SUB)
+# socket.connect("tcp://localhost:5555")
+# socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
 
 @app.route("/callback", methods=['POST'])
@@ -51,30 +52,33 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     """Handle message event."""
-    try:
+    author = line_bot_api.get_profile(event.source.user_id).display_name
+    message = event.message.text
+    body = request.get_data(as_text=True)
+    json_data = json.loads(body)
+    print(json_data)
+    if config.get('line_chat_type') == 'group':
         if event.source.group_id == config.get('line_group_id'):
-            author = line_bot_api.get_profile(event.source.user_id).display_name
-            message = event.message.text
             discord_webhook.send(f"{author}: {message}", username="LD's Automation Bot")
-        else:
-            print("Message is not from assigned group.")
-    except AttributeError:
-        print("This message is not from a group.")
-        pass
+    if config.get('line_chat_type') == 'user':
+        if event.source.user_id == config.get('line_user_id'):
+            discord_webhook.send(f"{author}: {message}", username="LD's Automation Bot")
 
 
-def receive_from_discord():
-    """Receive message from discord bot."""
-    while True:
-        received = socket.recv_json()
-        received = json.loads(received)
-        line_bot_api.push_message(config.get('line_group_id'),
-                                  TextMessage(
-                                      text=f"{received.get('author')}: {received.get('message')}"))
+# TODO(LD): zmq
+# def receive_from_discord():
+#     """Receive message from discord bot."""
+#     while True:
+#         received = socket.recv_json()
+#         received = json.loads(received)
+#         line_bot_api.push_message(config.get('line_group_id'),
+#                                   TextMessage(
+#                                       text=f"{received.get('author')}: {received.get('message')}"))
+#
+#
+# thread = Thread(target=receive_from_discord)
+# thread.start()
 
-
-thread = Thread(target=receive_from_discord)
-thread.start()
 
 if __name__ == "__main__":
     app.run()

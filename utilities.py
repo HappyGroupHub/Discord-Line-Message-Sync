@@ -36,7 +36,7 @@ def read_config():
                 "Line:\n  channel_access_token: ''\n  channel_secret: ''\n  line_notify_token: ''\n"
                 "\n  # 以下為聊天室綁定設定:\n  # 聊天室屬性, 目前只有私人訊息以及群組訊息兩種 (user, group)\n"
                 "  chat_type: ''\n\n  # 私人訊息: 請在user_id填入你的line_user_id\n"
-                "  # 群組訊息: 請在group_id填入你的群組id\n  # 一次只能填入一個id, 填寫一個後另一個留空\n"
+                "  # 群組訊息: 請在group_id填入你的群組id\n  # 依照上面聊天室屬性對應填入一個即可\n"
                 "  user_id: ''\n  group_id: ''\n\n"
                 "Discord:\n  bot_token: ''\n channel_id: ''\n  channel_webhook: ''\n")
         sys.exit()
@@ -53,4 +53,4 @@ def get_discord_webhook_id():
     :rtype: int
     """
     webhook_url = read_config().get('discord_channel_webhook')
-    return int(webhook_url.split('/')[-2])
+    return webhook_url.split('/')[-2]
