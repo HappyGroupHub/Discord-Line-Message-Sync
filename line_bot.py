@@ -54,15 +54,16 @@ def handle_message(event):
     """Handle message event."""
     author = line_bot_api.get_profile(event.source.user_id).display_name
     message = event.message.text
-    body = request.get_data(as_text=True)
-    json_data = json.loads(body)
-    print(json_data)
+    # Debug:
+    # body = request.get_data(as_text=True)
+    # json_data = json.loads(body)
+    # print(json_data)
     if config.get('line_chat_type') == 'group':
         if event.source.group_id == config.get('line_group_id'):
-            discord_webhook.send(f"{author}: {message}", username="LD's Automation Bot")
+            discord_webhook.send(f"{author}: {message}", username="Line 訊息")
     if config.get('line_chat_type') == 'user':
         if event.source.user_id == config.get('line_user_id'):
-            discord_webhook.send(f"{author}: {message}", username="LD's Automation Bot")
+            discord_webhook.send(f"{author}: {message}", username="Line 訊息")
 
 
 # TODO(LD): zmq

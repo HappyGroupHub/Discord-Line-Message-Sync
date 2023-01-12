@@ -31,7 +31,7 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    if message.author == utils.get_discord_webhook_id():
+    if message.author.id == utils.get_discord_webhook_id():
         return
     elif message.channel.id == int(config.get('discord_channel_id')):
         author = message.author.display_name

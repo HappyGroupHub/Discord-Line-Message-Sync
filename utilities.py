@@ -75,4 +75,4 @@ def get_discord_webhook_id():
     :rtype: int
     """
     webhook_url = read_config().get('discord_channel_webhook')
-    return webhook_url.split('/')[-2]
+    return int(webhook_url.split('/')[-2])
