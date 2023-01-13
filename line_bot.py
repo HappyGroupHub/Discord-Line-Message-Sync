@@ -53,13 +53,16 @@ def callback():
 def handle_message(event):
     """Handle message event."""
     print(debug_json())
-    author = line_bot_api.get_profile(event.source.user_id).display_name
-    message = event.message.text
-    if config.get('line_chat_type') == 'group':
-        if event.source.group_id == config.get('line_group_id'):
-            discord_webhook.send(f"{author}: {message}", username="Line 訊息")
     if config.get('line_chat_type') == 'user':
         if event.source.user_id == config.get('line_user_id'):
+            author = line_bot_api.get_profile(event.source.user_id).display_name
+            message = event.message.text
+            discord_webhook.send(f"{author}: {message}", username="Line 訊息")
+    if config.get('line_chat_type') == 'group':
+        if event.source.group_id == config.get('line_group_id'):
+            author = line_bot_api.get_group_member_profile(event.source.group_id,
+                                                           event.source.user_id).display_name
+            message = event.message.text
             discord_webhook.send(f"{author}: {message}", username="Line 訊息")
 
 
