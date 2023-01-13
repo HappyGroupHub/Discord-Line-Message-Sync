@@ -1,6 +1,7 @@
 """This python file will handle line webhooks."""
 
 import json
+
 # from threading import Thread
 #
 # import zmq
@@ -52,18 +53,20 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     """Handle message event."""
-    print(debug_json())
     if config.get('line_chat_type') == 'user':
         if event.source.user_id == config.get('line_user_id'):
             author = line_bot_api.get_profile(event.source.user_id).display_name
+            author_image = line_bot_api.get_profile(event.source.user_id).picture_url
             message = event.message.text
-            discord_webhook.send(f"{author}: {message}", username="Line 訊息")
+            discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
     if config.get('line_chat_type') == 'group':
         if event.source.group_id == config.get('line_group_id'):
             author = line_bot_api.get_group_member_profile(event.source.group_id,
                                                            event.source.user_id).display_name
+            author_image = line_bot_api.get_group_member_profile(event.source.group_id,
+                                                                 event.source.user_id).picture_url
             message = event.message.text
-            discord_webhook.send(f"{author}: {message}", username="Line 訊息")
+            discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
 
 
 # TODO(LD): zmq
