@@ -52,12 +52,9 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     """Handle message event."""
+    print(debug_json())
     author = line_bot_api.get_profile(event.source.user_id).display_name
     message = event.message.text
-    # Debug:
-    # body = request.get_data(as_text=True)
-    # json_data = json.loads(body)
-    # print(json_data)
     if config.get('line_chat_type') == 'group':
         if event.source.group_id == config.get('line_group_id'):
             discord_webhook.send(f"{author}: {message}", username="Line 訊息")
@@ -79,6 +76,16 @@ def handle_message(event):
 #
 # thread = Thread(target=receive_from_discord)
 # thread.start()
+
+
+def debug_json():
+    """Debug json.
+
+    :rtype json
+    """
+    body = request.get_data(as_text=True)
+    json_data = json.loads(body)
+    return json_data
 
 
 if __name__ == "__main__":
