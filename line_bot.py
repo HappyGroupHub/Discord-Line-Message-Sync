@@ -10,7 +10,7 @@ from flask import Flask, request, abort
 from flask.logging import create_logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage
+from linebot.models import MessageEvent, TextMessage, ImageMessage, TextSendMessage
 
 import utilities as utils
 
@@ -53,6 +53,15 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     """Handle message event."""
+    if event.message.text == '!ID':
+        if event.source.type == 'user':
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=event.source.user_id))
+        if event.source.type == 'group':
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=event.source.group_id))
     if config.get('line_chat_type') == 'user':
         if event.source.user_id == config.get('line_user_id'):
             author = line_bot_api.get_profile(event.source.user_id).display_name
