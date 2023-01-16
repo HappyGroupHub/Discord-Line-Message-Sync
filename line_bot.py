@@ -1,18 +1,19 @@
 """This python file will handle line webhooks."""
-
+import datetime
 import json
 
-# from threading import Thread
-#
-# import zmq
-from discord import SyncWebhook
+from discord import SyncWebhook, File
 from flask import Flask, request, abort
 from flask.logging import create_logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, ImageMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, ImageMessage, TextSendMessage, VideoMessage
 
 import utilities as utils
+
+# from threading import Thread
+#
+# import zmq
 
 config = utils.read_config()
 line_bot_api = LineBotApi(config.get('line_channel_access_token'))
@@ -78,6 +79,114 @@ def handle_message(event):
             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
 
 
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_image(event):
+    """Handle image message event."""
+    if config.get('line_chat_type') == 'user':
+        if event.source.user_id == config.get('line_user_id'):
+            author = line_bot_api.get_profile(event.source.user_id).display_name
+            author_image = line_bot_api.get_profile(event.source.user_id).picture_url
+            file_path = get_file_path(event.message.type, event.message.id)
+            discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+                                 avatar_url=author_image)
+    if config.get('line_chat_type') == 'group':
+        if event.source.group_id == config.get('line_group_id'):
+            author = line_bot_api.get_group_member_profile(event.source.group_id,
+                                                           event.source.user_id).display_name
+            author_image = line_bot_api.get_group_member_profile(event.source.group_id,
+                                                                 event.source.user_id).picture_url
+            file_path = get_file_path(event.message.type, event.message.id)
+            discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+                                 avatar_url=author_image)
+
+
+@handler.add(MessageEvent, message=VideoMessage)
+def handle_video(event):
+    """Handle video message event."""
+    if config.get('line_chat_type') == 'user':
+        if event.source.user_id == config.get('line_user_id'):
+            author = line_bot_api.get_profile(event.source.user_id).display_name
+            author_image = line_bot_api.get_profile(event.source.user_id).picture_url
+            file_path = get_file_path(event.message.type, event.message.id)
+            discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+                                 avatar_url=author_image)
+    if config.get('line_chat_type') == 'group':
+        if event.source.group_id == config.get('line_group_id'):
+            author = line_bot_api.get_group_member_profile(event.source.group_id,
+                                                           event.source.user_id).display_name
+            author_image = line_bot_api.get_group_member_profile(event.source.group_id,
+                                                                 event.source.user_id).picture_url
+            file_path = get_file_path(event.message.type, event.message.id)
+            discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+                                 avatar_url=author_image)
+
+
+# @handler.add(MessageEvent, message=AudioMessage)
+# def handle_audio(event):
+#     """Handle audio message event."""
+#     print(debug_json())
+#     if config.get('line_chat_type') == 'user':
+#         if event.source.user_id == config.get('line_user_id'):
+#             author = line_bot_api.get_profile(event.source.user_id).display_name
+#             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
+#             file_path = get_file_path(event.message.type, event.message.id)
+#             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+#                                  avatar_url=author_image)
+#     if config.get('line_chat_type') == 'group':
+#         if event.source.group_id == config.get('line_group_id'):
+#             print(debug_json())
+#             author = line_bot_api.get_group_member_profile(event.source.group_id,
+#                                                            event.source.user_id).display_name
+#             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
+#                                                                  event.source.user_id).picture_url
+#             message = event.message.text
+#             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
+#
+#
+# @handler.add(MessageEvent, message=FileMessage)
+# def handle_file(event):
+#     """Handle file message event."""
+#     print(debug_json())
+#     if config.get('line_chat_type') == 'user':
+#         if event.source.user_id == config.get('line_user_id'):
+#             author = line_bot_api.get_profile(event.source.user_id).display_name
+#             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
+#             file_path = get_file_path(event.message.type, event.message.id)
+#             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+#                                  avatar_url=author_image)
+#     if config.get('line_chat_type') == 'group':
+#         if event.source.group_id == config.get('line_group_id'):
+#             print(debug_json())
+#             author = line_bot_api.get_group_member_profile(event.source.group_id,
+#                                                            event.source.user_id).display_name
+#             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
+#                                                                  event.source.user_id).picture_url
+#             message = event.message.text
+#             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
+#
+#
+# @handler.add(MessageEvent, message=StickerMessage)
+# def handle_sticker(event):
+#     """Handle sticker message event."""
+#     print(debug_json())
+#     if config.get('line_chat_type') == 'user':
+#         if event.source.user_id == config.get('line_user_id'):
+#             author = line_bot_api.get_profile(event.source.user_id).display_name
+#             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
+#             file_path = get_file_path(event.message.type, event.message.id)
+#             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
+#                                  avatar_url=author_image)
+#     if config.get('line_chat_type') == 'group':
+#         if event.source.group_id == config.get('line_group_id'):
+#             print(debug_json())
+#             author = line_bot_api.get_group_member_profile(event.source.group_id,
+#                                                            event.source.user_id).display_name
+#             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
+#                                                                  event.source.user_id).picture_url
+#             message = event.message.text
+#             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
+
+
 # TODO(LD): zmq
 # def receive_from_discord():
 #     """Receive message from discord bot."""
@@ -91,6 +200,27 @@ def handle_message(event):
 #
 # thread = Thread(target=receive_from_discord)
 # thread.start()
+
+
+def get_file_path(message_type, message_id, file_name=None):
+    """Get file binary and save them in PC.
+
+    :param file_name:
+    :param message_type: message type from line
+    :param message_id: message id from line
+    :rtype str
+    """
+    source = line_bot_api.get_message_content(message_id)
+    file_type = {
+        'image': 'jpg',
+        'video': 'mp4',
+    }
+    file_path = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '.' + file_type.get(
+        message_type)
+    with open(file_path, 'wb') as fd:
+        for chunk in source.iter_content():
+            fd.write(chunk)
+    return file_path
 
 
 def debug_json():
