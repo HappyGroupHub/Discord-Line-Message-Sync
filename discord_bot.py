@@ -38,7 +38,7 @@ async def on_message(message):
             if attachment.filename.endswith(('.jpg', '.png', '.jpeg')):
                 author = message.author.display_name
                 message = message.content
-                image_file_path = utils.download_from_url(attachment.url, attachment.filename)
+                image_file_path = utils.download_file_from_url(attachment.url, attachment.filename)
                 line_notify.send_image_message(f"{author}: {message}", image_file_path)
             else:
                 line_notify.send_message(message.content)

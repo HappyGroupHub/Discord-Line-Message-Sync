@@ -1,5 +1,4 @@
 """This python file will handle line webhooks."""
-import datetime
 import json
 
 from discord import SyncWebhook, File
@@ -86,7 +85,8 @@ def handle_image(event):
         if event.source.user_id == config.get('line_user_id'):
             author = line_bot_api.get_profile(event.source.user_id).display_name
             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
-            file_path = get_file_path(event.message.type, event.message.id)
+            source = line_bot_api.get_message_content(event.message.id)
+            file_path = utils.download_file_from_line(source, event.message.type)
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
     if config.get('line_chat_type') == 'group':
@@ -95,7 +95,8 @@ def handle_image(event):
                                                            event.source.user_id).display_name
             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
                                                                  event.source.user_id).picture_url
-            file_path = get_file_path(event.message.type, event.message.id)
+            source = line_bot_api.get_message_content(event.message.id)
+            file_path = utils.download_file_from_line(source, event.message.type)
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
 
@@ -107,7 +108,8 @@ def handle_video(event):
         if event.source.user_id == config.get('line_user_id'):
             author = line_bot_api.get_profile(event.source.user_id).display_name
             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
-            file_path = get_file_path(event.message.type, event.message.id)
+            source = line_bot_api.get_message_content(event.message.id)
+            file_path = utils.download_file_from_line(source, event.message.type)
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
     if config.get('line_chat_type') == 'group':
@@ -116,7 +118,8 @@ def handle_video(event):
                                                            event.source.user_id).display_name
             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
                                                                  event.source.user_id).picture_url
-            file_path = get_file_path(event.message.type, event.message.id)
+            source = line_bot_api.get_message_content(event.message.id)
+            file_path = utils.download_file_from_line(source, event.message.type)
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
 
@@ -200,27 +203,6 @@ def handle_video(event):
 #
 # thread = Thread(target=receive_from_discord)
 # thread.start()
-
-
-def get_file_path(message_type, message_id, file_name=None):
-    """Get file binary and save them in PC.
-
-    :param file_name:
-    :param message_type: message type from line
-    :param message_id: message id from line
-    :rtype str
-    """
-    source = line_bot_api.get_message_content(message_id)
-    file_type = {
-        'image': 'jpg',
-        'video': 'mp4',
-    }
-    file_path = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '.' + file_type.get(
-        message_type)
-    with open(file_path, 'wb') as fd:
-        for chunk in source.iter_content():
-            fd.write(chunk)
-    return file_path
 
 
 def debug_json():

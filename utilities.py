@@ -79,14 +79,38 @@ def get_discord_webhook_id():
     return int(webhook_url.split('/')[-2])
 
 
-def download_from_url(url, filename):
+def download_file_from_url(url, filename):
     """Download file from url.
+
+    Use to download any files from discord.
 
     :param url: url of file
     :param filename: filename of file
-    :rtype: String
+    :return str: file path
     """
     file_path = './' + datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '_' + filename
     r = requests.get(url, allow_redirects=True)
     open(file_path, 'wb').write(r.content)
+    return file_path
+
+
+def download_file_from_line(source, message_type, file_name=None):
+    """Get file binary and save them in PC.
+
+    Use to download files from LINE.
+
+    :param source: source of file that given by LINE
+    :param message_type: message type from line
+    :param file_name: file name of file
+    :return str: file path
+    """
+    file_type = {
+        'image': 'jpg',
+        'video': 'mp4',
+    }
+    file_path = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '.' + file_type.get(
+        message_type)
+    with open(file_path, 'wb') as fd:
+        for chunk in source.iter_content():
+            fd.write(chunk)
     return file_path
