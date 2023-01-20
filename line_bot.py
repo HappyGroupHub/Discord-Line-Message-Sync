@@ -10,10 +10,6 @@ from linebot.models import MessageEvent, TextMessage, ImageMessage, TextSendMess
 
 import utilities as utils
 
-# from threading import Thread
-#
-# import zmq
-
 config = utils.read_config()
 line_bot_api = LineBotApi(config.get('line_channel_access_token'))
 handler = WebhookHandler(config.get('line_channel_secret'))
@@ -21,12 +17,6 @@ discord_webhook = SyncWebhook.from_url(config.get('discord_channel_webhook'))
 
 app = Flask(__name__)
 log = create_logger(app)
-
-
-# context = zmq.Context()
-# socket = context.socket(zmq.SUB)
-# socket.connect("tcp://localhost:5555")
-# socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
 
 @app.route("/callback", methods=['POST'])
@@ -122,87 +112,6 @@ def handle_video(event):
             file_path = utils.download_file_from_line(source, event.message.type)
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
-
-
-# @handler.add(MessageEvent, message=AudioMessage)
-# def handle_audio(event):
-#     """Handle audio message event."""
-#     print(debug_json())
-#     if config.get('line_chat_type') == 'user':
-#         if event.source.user_id == config.get('line_user_id'):
-#             author = line_bot_api.get_profile(event.source.user_id).display_name
-#             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
-#             file_path = get_file_path(event.message.type, event.message.id)
-#             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
-#                                  avatar_url=author_image)
-#     if config.get('line_chat_type') == 'group':
-#         if event.source.group_id == config.get('line_group_id'):
-#             print(debug_json())
-#             author = line_bot_api.get_group_member_profile(event.source.group_id,
-#                                                            event.source.user_id).display_name
-#             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
-#                                                                  event.source.user_id).picture_url
-#             message = event.message.text
-#             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
-#
-#
-# @handler.add(MessageEvent, message=FileMessage)
-# def handle_file(event):
-#     """Handle file message event."""
-#     print(debug_json())
-#     if config.get('line_chat_type') == 'user':
-#         if event.source.user_id == config.get('line_user_id'):
-#             author = line_bot_api.get_profile(event.source.user_id).display_name
-#             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
-#             file_path = get_file_path(event.message.type, event.message.id)
-#             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
-#                                  avatar_url=author_image)
-#     if config.get('line_chat_type') == 'group':
-#         if event.source.group_id == config.get('line_group_id'):
-#             print(debug_json())
-#             author = line_bot_api.get_group_member_profile(event.source.group_id,
-#                                                            event.source.user_id).display_name
-#             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
-#                                                                  event.source.user_id).picture_url
-#             message = event.message.text
-#             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
-#
-#
-# @handler.add(MessageEvent, message=StickerMessage)
-# def handle_sticker(event):
-#     """Handle sticker message event."""
-#     print(debug_json())
-#     if config.get('line_chat_type') == 'user':
-#         if event.source.user_id == config.get('line_user_id'):
-#             author = line_bot_api.get_profile(event.source.user_id).display_name
-#             author_image = line_bot_api.get_profile(event.source.user_id).picture_url
-#             file_path = get_file_path(event.message.type, event.message.id)
-#             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
-#                                  avatar_url=author_image)
-#     if config.get('line_chat_type') == 'group':
-#         if event.source.group_id == config.get('line_group_id'):
-#             print(debug_json())
-#             author = line_bot_api.get_group_member_profile(event.source.group_id,
-#                                                            event.source.user_id).display_name
-#             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
-#                                                                  event.source.user_id).picture_url
-#             message = event.message.text
-#             discord_webhook.send(message, username=f"{author} - (Line訊息)", avatar_url=author_image)
-
-
-# TODO(LD): zmq
-# def receive_from_discord():
-#     """Receive message from discord bot."""
-#     while True:
-#         received = socket.recv_json()
-#         received = json.loads(received)
-#         line_bot_api.push_message(config.get('line_group_id'),
-#                                   TextMessage(
-#                                       text=f"{received.get('author')}: {received.get('message')}"))
-#
-#
-# thread = Thread(target=receive_from_discord)
-# thread.start()
 
 
 def debug_json():
