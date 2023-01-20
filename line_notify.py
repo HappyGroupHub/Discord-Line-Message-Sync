@@ -20,10 +20,10 @@ def send_message(message):
 
 
 def send_image_message(message, image_path):
-    """Send image message to LINE Notify.
+    """Send media message to LINE Notify.
 
     :param str message: Message to send.
-    :param str image_path: Path to image.
+    :param str image_path: Path to media.
     """
     token = config.get('line_notify_token')
     headers = {"Authorization": "Bearer " + token}

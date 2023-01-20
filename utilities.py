@@ -1,8 +1,9 @@
 """This python file will handle some extra functions."""
-
+import datetime
 import sys
 from os.path import exists
 
+import requests
 import yaml
 from yaml import SafeLoader
 
@@ -76,3 +77,16 @@ def get_discord_webhook_id():
     """
     webhook_url = read_config().get('discord_channel_webhook')
     return int(webhook_url.split('/')[-2])
+
+
+def download_from_url(url, filename):
+    """Download file from url.
+
+    :param url: url of file
+    :param filename: filename of file
+    :rtype: String
+    """
+    file_path = './' + datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '_' + filename
+    r = requests.get(url, allow_redirects=True)
+    open(file_path, 'wb').write(r.content)
+    return file_path
