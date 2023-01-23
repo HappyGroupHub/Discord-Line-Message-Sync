@@ -14,11 +14,13 @@ config = utils.read_config()
 
 @client.event
 async def on_ready():
+    """Initialize discord bot."""
     print("Bot is ready.")
 
 
 @client.event
 async def on_message(message):
+    """Handle message event."""
     if message.author == client.user:
         return
     if message.author.id == utils.get_discord_webhook_id():
