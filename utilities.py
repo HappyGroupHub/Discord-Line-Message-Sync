@@ -11,19 +11,11 @@ from yaml import SafeLoader
 def config_file_generator():
     """Generate the template of config file"""
     with open('config.yml', 'w', encoding="utf8") as f:
-        f.write("""Line:
+        f.write("""# Discord-Line-Message-Sync v0.1.4
+Line:
   channel_access_token: ''
   channel_secret: ''
   line_notify_token: ''
-
-  # 以下為聊天室綁定設定:
-  # 聊天室屬性, 目前只有私人訊息以及群組訊息兩種 (user, group)
-  chat_type: ''
-
-  # 私人訊息: 請在user_id填入你的line_user_id
-  # 群組訊息: 請在group_id填入你的群組id
-  # 依照上面聊天室屬性對應填入一個即可
-  user_id: ''
   group_id: ''
 
 Discord:
@@ -55,8 +47,6 @@ def read_config():
                 'line_channel_secret': data['Line']['channel_secret'],
                 'line_channel_access_token': data['Line']['channel_access_token'],
                 'line_notify_token': data['Line']['line_notify_token'],
-                'line_chat_type': data['Line']['chat_type'],
-                'line_user_id': data['Line']['user_id'],
                 'line_group_id': data['Line']['group_id'],
                 'discord_bot_token': data['Discord']['bot_token'],
                 'discord_channel_id': data['Discord']['channel_id'],
