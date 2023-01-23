@@ -16,7 +16,7 @@ def send_message(message):
     headers = {"Authorization": "Bearer " + token}
     data = {'message': message}
     requests.post("https://notify-api.line.me/api/notify",
-                  headers=headers, data=data)
+                  headers=headers, data=data, timeout=5)
 
 
 def send_image_message(message, image_path):
@@ -28,7 +28,7 @@ def send_image_message(message, image_path):
     token = config.get('line_notify_token')
     headers = {"Authorization": "Bearer " + token}
     data = {'message': message}
-    image = open(image_path, 'rb')
-    files = {'imageFile': image}
+    with open(image_path, 'rb') as image:
+        files = {'imageFile': image}
     requests.post("https://notify-api.line.me/api/notify",
-                  headers=headers, data=data, files=files)
+                  headers=headers, data=data, files=files, timeout=5)
