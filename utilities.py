@@ -2,6 +2,7 @@
 import datetime
 import sys
 from os.path import exists
+from typing import List
 
 import requests
 import yaml
@@ -11,17 +12,30 @@ from yaml import SafeLoader
 def config_file_generator():
     """Generate the template of config file"""
     with open('config.yml', 'w', encoding="utf8") as f:
-        f.write("""# Discord-Line-Message-Sync v0.1.4
-Line:
-  channel_access_token: ''
-  channel_secret: ''
-  line_notify_token: ''
-  group_id: ''
+        f.write("""# ++--------------------------------++
+# | Discord-Line-Message-Sync v0.1.4 |
+# | Made by LD (MIT License)         |
+# ++--------------------------------++
 
+# Bot tokens and secrets
+# You will need to fill in the tokens and secrets for both your Line and Discord bots
+Line:
+  channel_access_token: '
+  channel_secret: ''
 Discord:
   bot_token: ''
-  channel_id: ''
-  channel_webhook: ''
+
+# Sync channels
+# This part will need you to fill in both Line and Discord channel IDs to listen to
+# And line notify token, discord channel webhook to send messages.
+# These four sets of data will be used to sync messages between Line and Discord
+# You can create as many sets of channels as you want to sync
+Sync_channels:
+  1:
+    line_group_id: ''
+    line_notify_token: ''
+    discord_channel_id: ''
+    discord_channel_webhook: ''
 """
                 )
     sys.exit()
@@ -37,21 +51,37 @@ def read_config():
     """
     if not exists('./config.yml'):
         print("Config file not found, create one by default.\nPlease finish filling config.yml")
-        with open('config.yml', 'w', encoding="utf8") as f:
+        with open('config.yml', 'w', encoding="utf8"):
             config_file_generator()
 
     try:
         with open('config.yml', 'r', encoding="utf8") as f:
             data = yaml.load(f, Loader=SafeLoader)
+            subscribed_line_channels: list = []
+            subscribed_discord_channels: List[int] = []
+            discord_webhook_bot_ids: List[int] = []
+            for i in range(1, len(data['Sync_channels']) + 1):
+                subscribed_line_channels.append(data['Sync_channels'][i]['line_group_id'])
+                subscribed_discord_channels.append(
+                    int(data['Sync_channels'][i]['discord_channel_id']))
+                discord_webhook_bot_ids.append(
+                    get_discord_webhook_bot_id(data['Sync_channels'][i]['discord_channel_webhook']))
             config = {
+                'subscribed_line_channels': subscribed_line_channels,
+                'subscribed_discord_channels': subscribed_discord_channels,
+                'discord_webhook_bot_ids': discord_webhook_bot_ids,
                 'line_channel_secret': data['Line']['channel_secret'],
                 'line_channel_access_token': data['Line']['channel_access_token'],
-                'line_notify_token': data['Line']['line_notify_token'],
-                'line_group_id': data['Line']['group_id'],
-                'discord_bot_token': data['Discord']['bot_token'],
-                'discord_channel_id': data['Discord']['channel_id'],
-                'discord_channel_webhook': data['Discord']['channel_webhook']
+                'discord_bot_token': data['Discord']['bot_token']
             }
+            for i in range(1, len(data['Sync_channels']) + 1):
+                config['line_group_id_' + str(i)] = data['Sync_channels'][i]['line_group_id']
+                config['line_notify_token_' + str(i)] = data['Sync_channels'][i][
+                    'line_notify_token']
+                config['discord_channel_id_' + str(i)] = data['Sync_channels'][i][
+                    'discord_channel_id']
+                config['discord_channel_webhook_' + str(i)] = data['Sync_channels'][i][
+                    'discord_channel_webhook']
             return config
     except (KeyError, TypeError):
         print(
@@ -60,12 +90,12 @@ def read_config():
         sys.exit()
 
 
-def get_discord_webhook_id():
-    """Get discord webhook id.
+def get_discord_webhook_bot_id(webhook_url):
+    """Get discord webhook's bot id.
 
-    :rtype: int
+    :param str webhook_url: Discord webhook url.
+    :return int: Discord webhook's bot id.
     """
-    webhook_url = read_config().get('discord_channel_webhook')
     return int(webhook_url.split('/')[-2])
 
 
