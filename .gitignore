@@ -1,6 +1,9 @@
 # Config File
 config.yml
 
+# Downloaded Files
+downloads
+
 # IDE Files and Environment
 .idea
 __pycache__

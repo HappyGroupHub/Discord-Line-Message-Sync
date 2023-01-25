@@ -1,5 +1,6 @@
 """This python file will handle some extra functions."""
 import datetime
+import os
 import sys
 from os.path import exists
 from typing import List
@@ -99,26 +100,32 @@ def get_discord_webhook_bot_id(webhook_url):
     return int(webhook_url.split('/')[-2])
 
 
-def download_file_from_url(url, filename):
+def download_file_from_url(sub_num, url, filename):
     """Download file from url.
 
     Use to download any files from discord.
 
+    :param int sub_num: Subscribed sync channels num.
     :param url: url of file
     :param filename: filename of file
     :return str: file path
     """
-    file_path = './' + datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '_' + filename
-    r = requests.get(url, allow_redirects=True)
-    open(file_path, 'wb').write(r.content)
+    r = requests.get(url, allow_redirects=True, timeout=5)
+    path = f'./downloads/{sub_num}'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    file_path = f'{path}/{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}_{filename}'
+    with open(file_path, 'wb') as fd:
+        fd.write(r.content)
     return file_path
 
 
-def download_file_from_line(source, message_type, file_name=None):
+def download_file_from_line(sub_num, source, message_type, file_name=None):
     """Get file binary and save them in PC.
 
     Use to download files from LINE.
 
+    :param int sub_num: Subscribed sync channels num.
     :param source: source of file that given by LINE
     :param message_type: message type from line
     :param file_name: file name of file
@@ -128,8 +135,11 @@ def download_file_from_line(source, message_type, file_name=None):
         'image': 'jpg',
         'video': 'mp4',
     }
-    file_path = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f') + '.' + file_type.get(
-        message_type)
+    path = f'./downloads/{sub_num}'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    file_path = \
+        f'{path}/{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}.{file_type.get(message_type)}'
     with open(file_path, 'wb') as fd:
         for chunk in source.iter_content():
             fd.write(chunk)

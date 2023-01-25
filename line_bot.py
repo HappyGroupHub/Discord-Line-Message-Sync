@@ -73,7 +73,7 @@ def handle_image(event):
             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
                                                                  event.source.user_id).picture_url
             source = line_bot_api.get_message_content(event.message.id)
-            file_path = utils.download_file_from_line(source, event.message.type)
+            file_path = utils.download_file_from_line(sub_num, source, event.message.type)
             discord_webhook = SyncWebhook.from_url(config.get(f'discord_channel_webhook_{sub_num}'))
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
@@ -92,7 +92,7 @@ def handle_video(event):
             author_image = line_bot_api.get_group_member_profile(event.source.group_id,
                                                                  event.source.user_id).picture_url
             source = line_bot_api.get_message_content(event.message.id)
-            file_path = utils.download_file_from_line(source, event.message.type)
+            file_path = utils.download_file_from_line(sub_num, source, event.message.type)
             discord_webhook = SyncWebhook.from_url(config.get(f'discord_channel_webhook_{sub_num}'))
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
