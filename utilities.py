@@ -7,6 +7,7 @@ from typing import List
 
 import requests
 import yaml
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from yaml import SafeLoader
 
 
@@ -144,3 +145,18 @@ def download_file_from_line(sub_num, source, message_type, file_name=None):
         for chunk in source.iter_content():
             fd.write(chunk)
     return file_path
+
+
+def generate_thumbnail(video_path, thumbnail_path=None, time=1):
+    """Generate thumbnail from video.
+
+    :param str video_path: Video path.
+    :param str thumbnail_path: Thumbnail path. If not given, will use video path to generate.
+    :param int time: Frame of video to generate thumbnail.(in seconds), default is 1.
+    :return str: Thumbnail path.
+    """
+    if thumbnail_path is None:
+        thumbnail_path = f'{os.path.splitext(video_path)[0]}.jpg'
+    video = VideoFileClip(video_path)
+    video.save_frame(thumbnail_path, t=time)
+    return thumbnail_path
