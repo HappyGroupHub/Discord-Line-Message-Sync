@@ -1,6 +1,10 @@
 """This python file will host discord bot."""
+import json
+import time
 
 import discord
+import zmq
+from discord import File
 
 import line_notify
 import utilities as utils
@@ -8,6 +12,10 @@ import utilities as utils
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
+
+context = zmq.Context()
+socket = context.socket(zmq.PUB)
+socket.bind("tcp://*:5555")
 
 config = utils.read_config()
 
@@ -35,6 +43,28 @@ async def on_message(message):
                     image_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
                     line_notify.send_image_message(sub_num, f"{author}: {message}", image_file_path)
+                if attachment.filename.endswith('.mp4'):
+                    video_file_path = utils.download_file_from_url(sub_num, attachment.url,
+                                                                   attachment.filename)
+                    thumbnail_path = utils.generate_thumbnail(video_file_path)
+
+                    # Send thumbnail to discord, get url, and delete the message.
+                    thumbnail_message = await message.channel.send(thumbnail_path,
+                                                                   file=File(thumbnail_path))
+                    thumbnail_url = thumbnail_message.attachments[0].url
+                    await thumbnail_message.delete()
+
+                    author = message.author.display_name
+                    message = message.content
+                    data = {'type': 'video', 'sub_num': sub_num, 'author': author,
+                            'message': message,
+                            'video_url': attachment.url,
+                            'thumbnail_url': thumbnail_url}
+                    json_data = json.dumps(data, ensure_ascii=False)
+                    for i in range(2):
+                        if i == 1:
+                            socket.send_json(json_data)
+                        time.sleep(1)
                 else:
                     # TODO(LD): Handle other file types.
                     pass

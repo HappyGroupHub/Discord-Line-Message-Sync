@@ -1,13 +1,17 @@
 """This python file will handle line webhooks."""
 import json
+from threading import Thread
 
+import zmq
 from discord import SyncWebhook, File
 from flask import Flask, request, abort
 from flask.logging import create_logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, ImageMessage, TextSendMessage, VideoMessage
+from linebot.models import MessageEvent, TextMessage, ImageMessage, VideoMessage, VideoSendMessage, \
+    TextSendMessage
 
+import line_notify
 import utilities as utils
 
 config = utils.read_config()
@@ -16,6 +20,11 @@ handler = WebhookHandler(config.get('line_channel_secret'))
 
 app = Flask(__name__)
 log = create_logger(app)
+
+context = zmq.Context()
+socket = context.socket(zmq.SUB)
+socket.connect("tcp://localhost:5555")
+socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
 
 @app.route("/callback", methods=['POST'])
@@ -107,6 +116,28 @@ def debug_json():
     json_data = json.loads(body)
     return json_data
 
+
+def receive_from_discord():
+    """Receive from discord bot."""
+    while True:
+        received = socket.recv_json()
+        received = json.loads(received)
+        if received.get('type') == 'video':
+            group_id = config.get(f"line_group_id_{received.get('sub_num')}")
+            message = received.get('message')
+            if message == "":
+                message = f"{received.get('author')}: 傳送了影片"
+            else:
+                message = f"{received.get('author')}: {message}(影片)"
+            line_notify.send_message(received.get('sub_num'), message)
+            line_bot_api.push_message(group_id,
+                                      VideoSendMessage(
+                                          original_content_url=received.get('video_url'),
+                                          preview_image_url=received.get('thumbnail_url')))
+
+
+thread = Thread(target=receive_from_discord)
+thread.start()
 
 if __name__ == "__main__":
     app.run()
