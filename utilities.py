@@ -135,6 +135,7 @@ def download_file_from_line(sub_num, source, message_type, file_name=None):
     file_type = {
         'image': 'jpg',
         'video': 'mp4',
+        'audio': 'm4a',
     }
     path = f'./downloads/{sub_num}'
     if not os.path.exists(path):
