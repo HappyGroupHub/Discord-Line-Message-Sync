@@ -9,7 +9,7 @@ from flask.logging import create_logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, ImageMessage, VideoMessage, VideoSendMessage, \
-    TextSendMessage, AudioMessage
+    TextSendMessage, AudioMessage, AudioSendMessage
 
 import line_notify
 import utilities as utils
@@ -114,7 +114,6 @@ def handle_audio(event):
         return
     if event.source.type == 'group':
         if event.source.group_id in config.get('subscribed_line_channels'):
-            print(debug_json())
             sub_num = config.get('subscribed_line_channels').index(event.source.group_id) + 1
             author = line_bot_api.get_group_member_profile(event.source.group_id,
                                                            event.source.user_id).display_name
@@ -154,6 +153,19 @@ def receive_from_discord():
                                       VideoSendMessage(
                                           original_content_url=received.get('video_url'),
                                           preview_image_url=received.get('thumbnail_url')))
+        if received.get('type') == 'audio':
+            print("ready to send audio")
+            group_id = config.get(f"line_group_id_{received.get('sub_num')}")
+            message = received.get('message')
+            if message == "":
+                message = f"{received.get('author')}: 傳送了音訊"
+            else:
+                message = f"{received.get('author')}: {message}(音訊)"
+            line_notify.send_message(received.get('sub_num'), message)
+            line_bot_api.push_message(group_id,
+                                      AudioSendMessage(
+                                          original_content_url=received.get('audio_url'),
+                                          duration=received.get('audio_duration')))
 
 
 thread = Thread(target=receive_from_discord)

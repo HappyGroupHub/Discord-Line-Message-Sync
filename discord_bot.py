@@ -69,6 +69,24 @@ async def on_message(message):
                         if i == 1:
                             socket.send_json(json_data)
                         time.sleep(1)
+                if attachment.filename.endswith(('m4a', '.wav', '.mp3', 'wav', 'aac', 'flac', 'ogg',
+                                                 'opus')):
+                    audio_file_path = utils.download_file_from_url(sub_num, attachment.url,
+                                                                   attachment.filename)
+                    if not attachment.filename.endswith('.m4a'):
+                        print("Converting to m4a...")
+                        audio_file_path = utils.audio_files_to_m4a(audio_file_path)
+                    audio_duration = utils.get_audio_duration(audio_file_path)
+                    author = message.author.display_name
+                    message = message.content
+                    data = {'type': 'audio', 'sub_num': sub_num, 'author': author,
+                            'message': message,
+                            'audio_url': attachment.url, 'audio_duration': audio_duration}
+                    json_data = json.dumps(data, ensure_ascii=False)
+                    for i in range(2):
+                        if i == 1:
+                            socket.send_json(json_data)
+                        time.sleep(1)
                 else:
                     # TODO(LD): Handle other file types.
                     pass

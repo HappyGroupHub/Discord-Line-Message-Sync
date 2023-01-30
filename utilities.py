@@ -8,6 +8,7 @@ from typing import List
 import requests
 import yaml
 from moviepy.video.io.VideoFileClip import VideoFileClip
+from pydub import AudioSegment
 from yaml import SafeLoader
 
 
@@ -151,6 +152,8 @@ def download_file_from_line(sub_num, source, message_type, file_name=None):
 def generate_thumbnail(video_path, thumbnail_path=None, time=1):
     """Generate thumbnail from video.
 
+    According to LINE API, when sending video, thumbnail is required.
+
     :param str video_path: Video path.
     :param str thumbnail_path: Thumbnail path. If not given, will use video path to generate.
     :param int time: Frame of video to generate thumbnail.(in seconds), default is 1.
@@ -161,3 +164,31 @@ def generate_thumbnail(video_path, thumbnail_path=None, time=1):
     video = VideoFileClip(video_path)
     video.save_frame(thumbnail_path, t=time)
     return thumbnail_path
+
+
+def audio_files_to_m4a(audio_path, result_path=None):
+    """Convert audio file to m4a format.
+
+    According to LINE API, audio file must be m4a format.
+    Support: mp3, wav, aac, flac, ogg, opus format.
+
+    :param str audio_path: Audio path.
+    :param result_path: Result path. If not given, will use audio path to generate.
+    :return str: Audio path.
+    """
+    if result_path is None:
+        result_path = f'{os.path.splitext(audio_path)[0]}.m4a'
+    AudioSegment.from_file(audio_path).export(result_path, format='m4a')
+    return result_path
+
+
+def get_audio_duration(audio_path, file_format='m4a'):
+    """Get audio duration.
+
+    :param str audio_path: Audio path.
+    :param str file_format: Audio file format. Default is m4a.
+    :return int duration: Audio duration in milliseconds.
+    """
+    audio = AudioSegment.from_file(audio_path, format=file_format)
+    duration = audio.duration_seconds * 1000
+    return duration
