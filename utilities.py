@@ -1,6 +1,7 @@
 """This python file will handle some extra functions."""
 import datetime
 import os
+import subprocess
 import sys
 from os.path import exists
 from typing import List
@@ -166,10 +167,11 @@ def generate_thumbnail(video_path, thumbnail_path=None, time=1):
     return thumbnail_path
 
 
-def audio_files_to_m4a(audio_path, result_path=None):
+def convert_audio_to_m4a(audio_path, result_path=None):
     """Convert audio file to m4a format.
 
     According to LINE API, audio file must be m4a format.
+    You must install ffmpeg to use this function.
     Support: mp3, wav, aac, flac, ogg, opus format.
 
     :param str audio_path: Audio path.
@@ -178,12 +180,13 @@ def audio_files_to_m4a(audio_path, result_path=None):
     """
     if result_path is None:
         result_path = f'{os.path.splitext(audio_path)[0]}.m4a'
-    AudioSegment.from_file(audio_path).export(result_path, format='m4a')
-    return result_path
+    subprocess.run(f'ffmpeg -i {audio_path} -c:a aac -vn {result_path}')
 
 
 def get_audio_duration(audio_path, file_format='m4a'):
     """Get audio duration.
+
+    You must install ffmpeg to use this function.
 
     :param str audio_path: Audio path.
     :param str file_format: Audio file format. Default is m4a.
@@ -192,3 +195,6 @@ def get_audio_duration(audio_path, file_format='m4a'):
     audio = AudioSegment.from_file(audio_path, format=file_format)
     duration = audio.duration_seconds * 1000
     return duration
+
+
+convert_audio_to_m4a('./downloads/1/test.mp3')
