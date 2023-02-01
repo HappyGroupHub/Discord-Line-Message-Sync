@@ -74,8 +74,7 @@ async def on_message(message):
                     audio_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
                     if not attachment.filename.endswith('.m4a'):
-                        print("Converting to m4a...")
-                        audio_file_path = utils.audio_files_to_m4a(audio_file_path)
+                        audio_file_path = utils.convert_audio_to_m4a(audio_file_path)
                     audio_duration = utils.get_audio_duration(audio_file_path)
                     author = message.author.display_name
                     message = message.content

@@ -154,7 +154,6 @@ def receive_from_discord():
                                           original_content_url=received.get('video_url'),
                                           preview_image_url=received.get('thumbnail_url')))
         if received.get('type') == 'audio':
-            print("ready to send audio")
             group_id = config.get(f"line_group_id_{received.get('sub_num')}")
             message = received.get('message')
             if message == "":

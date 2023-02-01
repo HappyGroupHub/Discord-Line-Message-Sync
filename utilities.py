@@ -195,6 +195,3 @@ def get_audio_duration(audio_path, file_format='m4a'):
     audio = AudioSegment.from_file(audio_path, format=file_format)
     duration = audio.duration_seconds * 1000
     return duration
-
-
-convert_audio_to_m4a('./downloads/1/test.mp3')
