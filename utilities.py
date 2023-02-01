@@ -180,7 +180,8 @@ def convert_audio_to_m4a(audio_path, result_path=None):
     """
     if result_path is None:
         result_path = f'{os.path.splitext(audio_path)[0]}.m4a'
-    subprocess.run(f'ffmpeg -i {audio_path} -c:a aac -vn {result_path}')
+    subprocess.run(f'ffmpeg -i {audio_path} -c:a aac -vn {result_path} -hide_banner -loglevel error')
+    return result_path
 
 
 def get_audio_duration(audio_path, file_format='m4a'):
