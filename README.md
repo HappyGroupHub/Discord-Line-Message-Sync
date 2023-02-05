@@ -1,8 +1,40 @@
 # Discord Line Message Sync
 
+📖 [繁體中文版README.md](#Discord-Line-訊息同步機器人) 📖
+
 ## A bot that syncs messages between Discord and Line
 
-📖 [繁體中文版README.md](#Discord-Line-訊息同步機器人) 📖
+This bot is made to sync all kinds of messages between Discord and Line, using four applications including Line bot,
+Line Notify, Discord bot and Discord webhook.
+
+imgs/gifs
+
+Below is a list of supported message types:
+
+| Discord -----to----> Line                    | 🪧  |
+|:---------------------------------------------|:---:|
+| Text Message                                 | ☑️  |
+| Pictures (jpg, jpeg, png)                    | ☑️  | 
+| Videos (mp4)                                 | ☑️  |
+| Audios (m4a, mp3, wav, aac, flac, ogg, opus) | ☑️  |
+| Other formats files                          |  ❌  |
+| GIFs                                         |  ❌  |
+| Sticker                                      |  ❌  |
+| Any other types of messages                  |  ❌  |
+
+| Line -----to----> Discord   | 🪧  |
+|:----------------------------|:---:|
+| Text Message                | ☑️  |
+| Pictures                    | ☑️  |
+| Videos                      | ☑️  |
+| Audios                      | ☑️  |
+| Files                       | ❌️  |
+| Sticker                     | ❌️  |
+| Location                    | ❌️  |
+| Any other types of messages | ❌️  |
+
+You can definitely host this service yourself! and it's free!
+Find it out by the following tutorial!
 
 ---
 
@@ -11,51 +43,51 @@
 ### How to use
 
 1. Download the latest release from [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases)
-2. Run `discord_bot.py` or `line_bot.py` in order to generate the config files
-3. Fill in the required information in `config.yml`
-4. Now run `discord_bot.py` and `line_bot.py` both
-5. Finish setting up Line webhook service
+2. Unzip the file then open up `config.yml`, [Notepad++](https://notepad-plus-plus.org/downloads/) is recommended
+3. Fill in the following required information, see [here](#About-config.yml) for more details
+4. Now run `run.bat` to start the bot
+5. Make sure you've invited the bot to your Discord server and added it / Line Notify to your Line group
 6. Enjoy!
 
 ### About config.yml
 
 ```yaml
+# ++--------------------------------++
+# | Discord-Line-Message-Sync ver.   |
+# | Made by LD (MIT License)         |
+# ++--------------------------------++
+
+# Bot tokens and secrets
+# You will need to fill in the tokens and secrets for both your Line and Discord bots
 Line:
   channel_access_token: ''
   channel_secret: ''
-  line_notify_token: ''
-
-  # 以下為聊天室綁定設定:
-  # 聊天室屬性, 目前只有私人訊息以及群組訊息兩種 (user, group)
-  chat_type: ''
-
-  # 私人訊息: 請在user_id填入你的line_user_id
-  # 群組訊息: 請在group_id填入你的群組id
-  # 依照上面聊天室屬性對應填入一個即可
-  user_id: ''
-  group_id: ''
-
 Discord:
   bot_token: ''
-  channel_id: ''
-  channel_webhook: ''
+
+# Sync channels
+# This part will need you to fill in both Line and Discord channel IDs to listen to
+# And line notify token, discord channel webhook to send messages.
+# These four sets of data will be used to sync messages between Line and Discord
+# You can create as many sets of channels as you want to sync
+Sync_channels:
+  1:
+    line_group_id: ''
+    line_notify_token: ''
+    discord_channel_id: ''
+    discord_channel_webhook: ''
 ```
 
 #### - How to get Line channel access token and secret
 
 1. Go to [Line Developers](https://developers.line.biz/console/) and login with your Line account
-2. Click `Create a new provider`
-3. Fill in the required information and click `Create`
-4. Click `Create a new channel` and select `Messaging API`
-5. Fill in the required information and click `Create`
-6. You can now find your channel secret in Basic settings and channel access token in Message API
-
-#### - How to get Line Notify token
-
-1. Go to [Line Notify](https://notify-bot.line.me/my/) and login with your Line account
-2. Click `Generate Token`
-3. Enter `Discord Message` as token name and select a chat room
-4. Click `Generate`
+2. If you don't have a Business ID, simply create one by following the instructions
+3. Then click `Create a new provider`
+4. Fill in the required information and click `Create`
+5. Click `Create a new channel` and select `Messaging API`
+6. Fill in the required information and click `Create`
+7. You can now find your channel secret in Basic settings and channel access token in Message API, click `Issue` to copy
+   it
 
 #### - How to get Discord bot token
 
@@ -64,7 +96,34 @@ Discord:
 3. Fill in the name of application and click `Create`
 4. Click `Bot` on the left side
 5. Click `Add Bot`
-6. Click `Copy` under `Token`
+6. Check `Presence Intent`, `Server Members Intent` and `Message Content Intent` under `Privileged Gateway Intents`
+7. Now you can find your bot token in `Build-A-Bot` section, click `Reset Token` to copy it
+
+#### - How to get Line group ID
+
+1. Make sure you've added your Line bot to the group
+2. Run `run.bat` to start the bot (You have to fill up Bot tokens and secrets first)
+3. Send `!ID` to the group chat that you want to sync
+4. The bot will reply with the group ID, simply copy and paste it to `config.yml`
+
+Notes: If you can't add your Line bot to the group, please make sure you've checked `Allow bot to join group chats`
+option in your Line bot settings, which can be found in `Messaging API` > `LINE Official Account features` section.
+
+#### - How to get Line Notify token
+
+1. Go to [Line Notify](https://notify-bot.line.me/my/) and login with your Line account
+2. Click `Generate Token`
+3. Enter `Discord Message` as token name and select a chat room
+4. Click `Generate`
+
+#### - How to get Discord channel ID
+
+1. Go to your Discord server
+2. Right-click on the channel you want to sync
+3. Click `Copy ID`
+
+Notes: If you didn't see `Copy ID` in the menu, you need to enable developer mode in Discord settings, which can be
+found in `Settings` > `Advanced` > `Developer Mode`
 
 #### - How to create a Discord channel webhook
 
@@ -79,9 +138,10 @@ Discord:
 2. Select your channel application
 3. Select Messaging API, find `Webhook URL` and click edit
 4. Fill in the URL of your Line bot and add `/callback` at the end
-5. Click `Save` and you are done!
+5. Click `Save` and it's pretty done!
+6. Remember to check `Use webhook` under the `Webhook URL` section
 
-Note that Line webhook only works with HTTPS, so you need to use a reverse proxy to make it work.
+Notes: Line webhook only works with HTTPS, so you need to use a reverse proxy to make it work.
 If you don't know how to create a reverse proxy, you can use [ngrok](https://ngrok.com/) to create a temporary one.
 
 ### Use Ngrok to create a reverse proxy
@@ -89,10 +149,11 @@ If you don't know how to create a reverse proxy, you can use [ngrok](https://ngr
 1. Go to [Ngrok](https://ngrok.com) sign up for an account and login
 2. Find your auth token in [Dashboard](https://dashboard.ngrok.com/auth) and copy it
 3. Download the latest version of ngrok from [here](https://ngrok.com/download)
-4. Extract the zip file and run `ngrok.exe` 
+4. Extract the zip file and run `ngrok.exe`
 5. Run `ngrok authtoken <your_auth_token>` for first time use, it will save your auth token
 6. Run `ngrok http 5000` (5000 is the default port of the bot)
-7. Copy the URL from `Fowarding` then check out [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync#Setting-up-Line-webhook)
+7. Copy the URL from `Fowarding` then check
+   out [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync#Setting-up-Line-webhook)
 
 ---
 
@@ -114,6 +175,10 @@ If you don't know how to create a reverse proxy, you can use [ngrok](https://ngr
 * [LineBotSDK](https://github.com/line/line-bot-sdk-python) for Line bot
 * [discord.py](https://github.com/Rapptz/discord.py) for Discord bot
 * [ZeroMQ](https://github.com/zeromq/pyzmq) for messaging between Line bot and Discord bot
+* [PyYAML](https://github.com/yaml/pyyaml) for reading config file
+* [requests](https://github.com/psf/requests) for sending HTTP requests
+* [moviepy](https://github.com/Zulko/moviepy) for creating video thumbnail
+* [pydub](https://github.com/jiaaro/pydub) for ffmpeg wrapper
 
 ### Code style and commits
 
@@ -150,7 +215,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 1. 從 [這裡](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases) 下載最新的版本
 2. 運行 `discord_bot.py` 或 `line_bot.py` 讓系統首次生成檔案
 3. 完成填寫 `config.yml`
-4. 同時運行 `discord_bot.py` 以及 `line_bot.py` 
+4. 同時運行 `discord_bot.py` 以及 `line_bot.py`
 5. 完成 Line webhook 的設定
 6. 盡情使用!
 
@@ -226,7 +291,7 @@ Discord:
 1. 前往 [Ngrok](https://ngrok.com) 註冊一個帳號並登入
 2. 前往 [Dashboard](https://dashboard.ngrok.com/auth) 並複製你的 `authtoken`
 3. 從 [這裡](https://ngrok.com/download) 下載最新版本的主程式
-4. 解壓縮檔案並運行 `ngrok.exe` 
+4. 解壓縮檔案並運行 `ngrok.exe`
 5. 執行 `ngrok authtoken <your_auth_token>` 來初次啟用服務，它會自動儲存你的認證碼
 6. 執行 `ngrok http 5000` (5000埠是預設的閘道)
 7. 複製 `Fowarding` 所生成的URL並查看 [這裡](#設定Line-Webhook)
