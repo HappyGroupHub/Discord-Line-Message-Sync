@@ -46,7 +46,7 @@ async def on_message(message):
                         message = f"{author}: 傳送了圖片"
                     else:
                         message = f"{author}: {message}(圖片)"
-                    line_notify.send_image_message(sub_num, f"{author}: {message}", image_file_path)
+                    line_notify.send_image_message(sub_num, message, image_file_path)
                 if attachment.filename.endswith('.mp4'):
                     video_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
