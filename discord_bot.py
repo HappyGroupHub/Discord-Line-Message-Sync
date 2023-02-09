@@ -60,15 +60,8 @@ async def on_message(message):
 
                     author = message.author.display_name
                     message = message.clean_content
-                    data = {'type': 'video', 'sub_num': sub_num, 'author': author,
-                            'message': message,
-                            'video_url': attachment.url,
-                            'thumbnail_url': thumbnail_url}
-                    json_data = json.dumps(data, ensure_ascii=False)
-                    for i in range(2):
-                        if i == 1:
-                            socket.send_json(json_data)
-                        time.sleep(1)
+                    send_to_line_bot('video', sub_num, author, message, video_url=attachment.url,
+                                     thumbnail_url=thumbnail_url)
                 if attachment.filename.endswith(('m4a', '.wav', '.mp3', 'wav', 'aac', 'flac', 'ogg',
                                                  'opus')):
                     audio_file_path = utils.download_file_from_url(sub_num, attachment.url,
@@ -78,14 +71,8 @@ async def on_message(message):
                     audio_duration = utils.get_audio_duration(audio_file_path)
                     author = message.author.display_name
                     message = message.clean_content
-                    data = {'type': 'audio', 'sub_num': sub_num, 'author': author,
-                            'message': message,
-                            'audio_url': attachment.url, 'audio_duration': audio_duration}
-                    json_data = json.dumps(data, ensure_ascii=False)
-                    for i in range(2):
-                        if i == 1:
-                            socket.send_json(json_data)
-                        time.sleep(1)
+                    send_to_line_bot('audio', sub_num, author, message, audio_url=attachment.url,
+                                     audio_duration=audio_duration)
                 else:
                     # TODO(LD): Handle other file types.
                     pass
@@ -93,6 +80,35 @@ async def on_message(message):
             author = message.author.display_name
             message = message.clean_content
             line_notify.send_message(sub_num, f"{author}: {message}")
+
+
+def send_to_line_bot(msg_type, sub_num, author, message, video_url=None, thumbnail_url=None,
+                     audio_url=None, audio_duration=None):
+    """Send message to line bot.
+
+    Use zmq to send messages to line bot.
+
+    :param msg_type: Message type, can be 'video', 'audio'.
+    :param sub_num: Subscription number.
+    :param author: Author of the message.
+    :param message: Message content.
+    :param video_url: Video url.
+    :param thumbnail_url: Thumbnail url.
+    :param audio_url: Audio url.
+    :param audio_duration: Audio duration.
+    """
+    data = {'msg_type': msg_type, 'sub_num': sub_num, 'author': author, 'message': message}
+    if msg_type == 'video':
+        data['video_url'] = video_url
+        data['thumbnail_url'] = thumbnail_url
+    if msg_type == 'audio':
+        data['audio_url'] = audio_url
+        data['audio_duration'] = audio_duration
+    json_data = json.dumps(data, ensure_ascii=False)
+    for i in range(2):
+        if i == 1:
+            socket.send_json(json_data)
+        time.sleep(1)
 
 
 client.run(config.get('discord_bot_token'))
