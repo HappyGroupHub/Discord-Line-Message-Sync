@@ -39,7 +39,7 @@ async def on_message(message):
             for attachment in message.attachments:
                 if attachment.filename.endswith(('.jpg', '.png', '.jpeg')):
                     author = message.author.display_name
-                    message = message.content
+                    message = message.clean_content
                     image_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
                     if message == '':
@@ -59,7 +59,7 @@ async def on_message(message):
                     await thumbnail_message.delete()
 
                     author = message.author.display_name
-                    message = message.content
+                    message = message.clean_content
                     data = {'type': 'video', 'sub_num': sub_num, 'author': author,
                             'message': message,
                             'video_url': attachment.url,
@@ -77,7 +77,7 @@ async def on_message(message):
                         audio_file_path = utils.convert_audio_to_m4a(audio_file_path)
                     audio_duration = utils.get_audio_duration(audio_file_path)
                     author = message.author.display_name
-                    message = message.content
+                    message = message.clean_content
                     data = {'type': 'audio', 'sub_num': sub_num, 'author': author,
                             'message': message,
                             'audio_url': attachment.url, 'audio_duration': audio_duration}
@@ -91,7 +91,7 @@ async def on_message(message):
                     pass
         else:
             author = message.author.display_name
-            message = message.content
+            message = message.clean_content
             line_notify.send_message(sub_num, f"{author}: {message}")
 
 
