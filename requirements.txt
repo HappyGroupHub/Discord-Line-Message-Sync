@@ -1,4 +1,4 @@
-discord.py==2.1.0
+discord.py==2.1.1
 Flask==2.2.2
 line_bot_sdk==2.4.1
 moviepy==1.0.3
