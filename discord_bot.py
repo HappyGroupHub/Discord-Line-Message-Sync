@@ -17,6 +17,10 @@ context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5555")
 
+supported_image_format = {'.jpg', '.png', '.jpeg'}
+supported_video_format = {'.mp4'}
+supported_audio_format = {'.m4a', '.wav', '.mp3', '.aac', '.flac', '.ogg', '.opus'}
+
 config = utils.read_config()
 
 
@@ -35,10 +39,10 @@ async def on_message(message):
         return
     if message.channel.id in config.get('subscribed_discord_channels'):
         sub_num = config.get('subscribed_discord_channels').index(message.channel.id) + 1
+        author = message.author.display_name
         if message.attachments:
             for attachment in message.attachments:
-                if attachment.filename.endswith(('.jpg', '.png', '.jpeg')):
-                    author = message.author.display_name
+                if attachment.filename.endswith(supported_image_format):
                     message = message.clean_content
                     image_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
@@ -47,7 +51,7 @@ async def on_message(message):
                     else:
                         message = f"{author}: {message}(圖片)"
                     line_notify.send_image_message(sub_num, message, image_file_path)
-                if attachment.filename.endswith('.mp4'):
+                if attachment.filename.endswith(supported_video_format):
                     video_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
                     thumbnail_path = utils.generate_thumbnail(video_file_path)
@@ -58,18 +62,15 @@ async def on_message(message):
                     thumbnail_url = thumbnail_message.attachments[0].url
                     await thumbnail_message.delete()
 
-                    author = message.author.display_name
                     message = message.clean_content
                     send_to_line_bot('video', sub_num, author, message, video_url=attachment.url,
                                      thumbnail_url=thumbnail_url)
-                if attachment.filename.endswith(('m4a', '.wav', '.mp3', 'wav', 'aac', 'flac', 'ogg',
-                                                 'opus')):
+                if attachment.filename.endswith(supported_audio_format):
                     audio_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
                     if not attachment.filename.endswith('.m4a'):
                         audio_file_path = utils.convert_audio_to_m4a(audio_file_path)
                     audio_duration = utils.get_audio_duration(audio_file_path)
-                    author = message.author.display_name
                     message = message.clean_content
                     send_to_line_bot('audio', sub_num, author, message, audio_url=attachment.url,
                                      audio_duration=audio_duration)
@@ -77,7 +78,6 @@ async def on_message(message):
                     # TODO(LD): Handle other file types.
                     pass
         else:
-            author = message.author.display_name
             message = message.clean_content
             line_notify.send_message(sub_num, f"{author}: {message}")
 
@@ -89,7 +89,7 @@ def send_to_line_bot(msg_type, sub_num, author, message, video_url=None, thumbna
     Use zmq to send messages to line bot.
 
     :param msg_type: Message type, can be 'video', 'audio'.
-    :param sub_num: Subscription number.
+    :param sub_num: Subscribed sync channels num.
     :param author: Author of the message.
     :param message: Message content.
     :param video_url: Video url.
