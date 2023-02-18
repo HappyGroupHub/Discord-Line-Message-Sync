@@ -11,27 +11,27 @@ imgs/gifs
 
 Below is a list of supported message types:
 
-| Discord -----to----> Line                    | 🪧  |
-|:---------------------------------------------|:---:|
-| Text Message                                 | ☑️  |
-| Pictures (jpg, jpeg, png)                    | ☑️  | 
-| Videos (mp4)                                 | ☑️  |
-| Audios (m4a, mp3, wav, aac, flac, ogg, opus) | ☑️  |
-| Other formats files                          |  ❌  |
-| GIFs                                         |  ❌  |
-| Sticker                                      |  ❌  |
-| Any other types of messages                  |  ❌  |
+| Line -----to----> Discord   | Support |
+|:----------------------------|:-------:|
+| Text Message                |   ☑️    |
+| Pictures                    |   ☑️    |
+| Videos                      |   ☑️    |
+| Audios                      |   ☑️    |
+| Files                       |   ❌️    |
+| Sticker                     |   ❌️    |
+| Location                    |   ❌️    |
+| Any other types of messages |   ❌️    |
 
-| Line -----to----> Discord   | 🪧  |
-|:----------------------------|:---:|
-| Text Message                | ☑️  |
-| Pictures                    | ☑️  |
-| Videos                      | ☑️  |
-| Audios                      | ☑️  |
-| Files                       | ❌️  |
-| Sticker                     | ❌️  |
-| Location                    | ❌️  |
-| Any other types of messages | ❌️  |
+| Discord -----to----> Line                    | Support |
+|:---------------------------------------------|:-------:|
+| Text Message                                 |   ☑️    |
+| Pictures (jpg, jpeg, png)                    |   ☑️    | 
+| Videos (mp4)                                 |   ☑️    |
+| Audios (m4a, mp3, wav, aac, flac, ogg, opus) |   ☑️    |
+| Other formats files                          |    ❌    |
+| GIFs                                         |    ❌    |
+| Sticker                                      |    ❌    |
+| Any other types of messages                  |    ❌    |
 
 You can definitely host this service yourself! and it's free!
 Find it out by the following tutorial!
@@ -202,9 +202,40 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # Discord Line 訊息同步機器人
 
+📖 [English README.md](#Discord-Line-Message-Sync) 📖
+
 ## 一個將Discord與Line訊息同步的聊天機器人
 
-📖 [English README.md](#Discord-Line-Message-Sync) 📖
+這個機器人將盡可能的同步Discord與Line的所有訊息，運用包括Line bot、Line Notify、Discord bot及Discord webhook等技術。
+
+imgs/gifs
+
+目前支援/不支援的訊息種類:
+
+| Line -----傳送至----> Discord | 支援  |
+|:---------------------------|:---:|
+| 文字訊息                       | ☑️  |
+| 圖片                         | ☑️  |
+| 影片                         | ☑️  |
+| 音檔                         | ☑️  |
+| 檔案                         | ❌️  |
+| 貼圖                         | ❌️  |
+| 位置訊息                       | ❌️  |
+| 任何其他種類的訊息                  | ❌️  |
+
+| Discord -----傳送至----> Line               | 支援  |
+|:-----------------------------------------|:---:|
+| 文字訊息                                     | ☑️  |
+| 圖片 (jpg, jpeg, png)                      | ☑️  | 
+| 影片 (mp4)                                 | ☑️  |
+| 音檔 (m4a, mp3, wav, aac, flac, ogg, opus) | ☑️  |
+| 其他種類的檔案                                  |  ❌  |
+| GIFs                                     |  ❌  |
+| 貼圖                                       |  ❌  |
+| 任何其他種類的訊息                                |  ❌  |
+
+You can definitely host this service yourself! and it's free!
+Find it out by the following tutorial!
 
 ---
 
@@ -213,51 +244,50 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### 如何下載及運行
 
 1. 從 [這裡](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases) 下載最新的版本
-2. 運行 `discord_bot.py` 或 `line_bot.py` 讓系統首次生成檔案
-3. 完成填寫 `config.yml`
-4. 同時運行 `discord_bot.py` 以及 `line_bot.py`
-5. 完成 Line webhook 的設定
+2. 解壓縮檔案後，於資料夾內開啟 `config.yml`, 建議使用[Notepad++](https://notepad-plus-plus.org/downloads/)來編輯檔案
+3. 遵照內文完成填寫 `config.yml`，請參考 [這裡](#關於 config.yml)
+4. 運行 `run.bat`
+5. 確認你已經邀請Line bot/Line Notify/Discord bot至你的伺服器及聊天室
 6. 盡情使用!
 
 ### 關於 config.yml
 
 ```yaml
+# ++--------------------------------++
+# | Discord-Line-Message-Sync ver.   |
+# | Made by LD (MIT License)         |
+# ++--------------------------------++
+
+# Bot tokens and secrets
+# You will need to fill in the tokens and secrets for both your Line and Discord bots
 Line:
   channel_access_token: ''
   channel_secret: ''
-  line_notify_token: ''
-
-  # 以下為聊天室綁定設定:
-  # 聊天室屬性, 目前只有私人訊息以及群組訊息兩種 (user, group)
-  chat_type: ''
-
-  # 私人訊息: 請在user_id填入你的line_user_id
-  # 群組訊息: 請在group_id填入你的群組id
-  # 依照上面聊天室屬性對應填入一個即可
-  user_id: ''
-  group_id: ''
-
 Discord:
   bot_token: ''
-  channel_id: ''
-  channel_webhook: ''
+
+# Sync channels
+# This part will need you to fill in both Line and Discord channel IDs to listen to
+# And line notify token, discord channel webhook to send messages.
+# These four sets of data will be used to sync messages between Line and Discord
+# You can create as many sets of channels as you want to sync
+Sync_channels:
+  1:
+    line_group_id: ''
+    line_notify_token: ''
+    discord_channel_id: ''
+    discord_channel_webhook: ''
 ```
 
 #### - 獲取 Line channel access token 及 secret
 
 1. 前往 [Line Developers](https://developers.line.biz/console/) 並使用你的Line帳號登入
-2. 點擊 `Create a new provider`
-3. 填寫完官網需要的資料後點擊 `Create`
-4. 點擊 `Create a new channel` 並選擇 `Messaging API` 的分類
-5. 填寫完需要的資料後點擊 `Create`
-6. 現在你可以在 Basic settings 找到你的 `channel secret` 以及在 Message API 找到 `channel access token`
-
-#### - 獲取 Line Notify token
-
-1. 前往 [Line Notify](https://notify-bot.line.me/my/) 並使用你的Line帳號登入
-2. 點擊 `發行權杖`
-3. 權杖名稱輸入 `Discord訊息` 並選擇你想同步的聊天室
-4. 點擊 `發行`
+2. 如果你沒有Business ID，請按照官網的指示建立一個
+3. 點擊 `Create a new provider`
+4. 填寫完需要的資料後點擊 `Create`
+5. 點擊 `Create a new channel` 並選擇 `Messaging API` 的分類
+6. 填寫完需要的資料後點擊 `Create`
+7. 現在你可以在 Basic settings 找到你的 `channel secret` 以及在 Message API 找到 `channel access token`，點擊 `Issue` 來複製
 
 #### - 獲取 Discord bot token
 
@@ -266,7 +296,33 @@ Discord:
 3. 幫此機器人取名為 `Line訊息` 後點擊 `Create`
 4. 點擊左側列表的 `Bot`
 5. 點擊 `Add Bot`
-6. 點擊 `Token` 底下的 `Copy` 來複製金鑰
+6. 在 `Privileged Gateway Intents` 底下將 `Presence Intent`, `Server Members Intent` 及 `Message Content Intent` 都打勾
+7. 現在你可以在 `Build-A-Bot` 底下找到你的 bot token，點擊 `Reset Token` 來複製
+
+#### - 獲取 Line group ID
+
+1. 確認你已經將你的Line bot加入到你想要同步的群組
+2. 運行 `run.bat` 來啟動機器人 (你必須先填寫機器人的token及secret)
+3. 在你想要同步的群組內傳送 `!ID`
+4. 機器人會回覆群組的ID，請將它複製並貼到 `config.yml` 中
+
+注意: 如果你無法將你的Line bot加入群組，請確認你已經在 `Messaging API` > `LINE Official Account features`
+底下勾選 `Allow bot to join group chats` 這個選項
+
+#### - 獲取 Line Notify token
+
+1. 前往 [Line Notify](https://notify-bot.line.me/my/) 並使用你的Line帳號登入
+2. 點擊 `發行權杖`
+3. 權杖名稱輸入 `Discord訊息` 並選擇你想同步的聊天室
+4. 點擊 `發行`
+
+#### - 獲取 Discord頻道 ID
+
+1. 前往你的Discord伺服器
+2. 右鍵點擊你想要同步的文字頻道
+3. 點擊 `複製ID`
+
+注意: 如果你沒有看到 `複製ID` 這個選項，請先在Discord的設定中啟用開發者模式，你可以在 `設定` > `進階` > `開發者模式` 中找到
 
 #### - 建立一個 Discord channel webhook
 
@@ -281,7 +337,8 @@ Discord:
 2. 點擊你要使用的 `channel application`
 3. 選擇 Messaging API 分類, 找到 `Webhook URL` 並點擊 `edit`
 4. 貼上你架設Line機器人的URL並在尾處加上 `/callback`
-5. 點擊 `Save` 就完成囉!
+5. 點擊 `Save`
+6. 在 `Webhook URL` 底下勾選 `Use webhook`
 
 注意! Line Webhook僅適用於 `HTTPS` 協議，恕不接受任何未經認證過的網址
 如果你不知道如何申請，可以使用[ngrok](https://ngrok.com/)創建一個簡單的導向服務
@@ -316,6 +373,10 @@ Discord:
 * [LineBotSDK](https://github.com/line/line-bot-sdk-python) 用來與Line API溝通
 * [discord.py](https://github.com/Rapptz/discord.py) 用來與Discord API溝通
 * [ZeroMQ](https://github.com/zeromq/pyzmq) 用來在兩個程式之間進行溝通
+* [PyYAML](https://github.com/yaml/pyyaml) 用來讀取config.yml檔案
+* [requests](https://github.com/psf/requests) 用來傳送HTTP請求
+* [moviepy](https://github.com/Zulko/moviepy) 用來製作影片的縮圖
+* [pydub](https://github.com/jiaaro/pydub) 用來使用ffmpeg處理影音檔案
 
 ### Code style and commits
 
