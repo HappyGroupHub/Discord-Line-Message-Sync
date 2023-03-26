@@ -17,9 +17,9 @@ context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:5555")
 
-supported_image_format = {'.jpg', '.png', '.jpeg'}
-supported_video_format = {'.mp4'}
-supported_audio_format = {'.m4a', '.wav', '.mp3', '.aac', '.flac', '.ogg', '.opus'}
+supported_image_format = ('.jpg', '.png', '.jpeg')
+supported_video_format = '.mp4'
+supported_audio_format = ('.m4a', '.wav', '.mp3', '.aac', '.flac', '.ogg', '.opus')
 
 config = utils.read_config()
 
