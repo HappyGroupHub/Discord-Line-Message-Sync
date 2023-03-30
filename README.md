@@ -4,12 +4,13 @@
 
 ## A bot that syncs messages between Discord and Line
 
+![Banner](./readme_imgs/banner.jpg)
 This bot is made to sync all kinds of messages between Discord and Line, using four applications including Line bot,
 Line Notify, Discord bot and Discord webhook.
 
-imgs/gifs
+![Demo](./readme_imgs/demo.gif)
 
-Below is a list of supported message types:
+Supported messages sync types:
 
 | Line -----to----> Discord   | Support |
 |:----------------------------|:-------:|
@@ -44,10 +45,15 @@ Find it out by the following tutorial!
 
 1. Download the latest release from [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases)
 2. Unzip the file then open up `config.yml`, [Notepad++](https://notepad-plus-plus.org/downloads/) is recommended
-3. Fill in the following required information, see [here](#About-config.yml) for more details
+3. Fill in the following required information, see [here](#About-configyml) for more details
 4. Now run `run.bat` to start the bot
 5. Make sure you've invited the bot to your Discord server and added it / Line Notify to your Line group
 6. Enjoy!
+
+### Dependencies
+
+- [ffmpeg](https://ffmpeg.org/download.html) - You need to install ffmpeg and add it to your PATH environment variable
+  to use this bot
 
 ### About config.yml
 
@@ -194,6 +200,11 @@ If you don't know how to create a reverse proxy, you can use [ngrok](https://ngr
     - Optimize - your commit messages here
     - Standardize - your commit messages here
 
+### Find bugs or having suggestions?
+
+If you have any suggestions or found any bugs, please open an
+issue [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/issues), will try to fix it as soon as possible.
+
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
@@ -206,11 +217,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 一個將Discord與Line訊息同步的聊天機器人
 
+![Banner](./readme_imgs/banner.jpg)
 這個機器人將盡可能的同步Discord與Line的所有訊息，運用包括Line bot、Line Notify、Discord bot及Discord webhook等技術。
 
-imgs/gifs
+![Demo](./readme_imgs/demo.gif)
 
-目前支援/不支援的訊息種類:
+目前支援同步的訊息種類:
 
 | Line -----傳送至----> Discord | 支援  |
 |:---------------------------|:---:|
@@ -234,8 +246,8 @@ imgs/gifs
 | 貼圖                                       |  ❌  |
 | 任何其他種類的訊息                                |  ❌  |
 
-You can definitely host this service yourself! and it's free!
-Find it out by the following tutorial!
+想要自己架設這個訊息同步機器人嗎?
+快點看看下面的使用教學吧!
 
 ---
 
@@ -245,10 +257,14 @@ Find it out by the following tutorial!
 
 1. 從 [這裡](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases) 下載最新的版本
 2. 解壓縮檔案後，於資料夾內開啟 `config.yml`, 建議使用[Notepad++](https://notepad-plus-plus.org/downloads/)來編輯檔案
-3. 遵照內文完成填寫 `config.yml`，請參考 [這裡](#關於 config.yml)
+3. 遵照內文完成填寫 `config.yml`，請參考 [這裡](#關於-configyml)
 4. 運行 `run.bat`
 5. 確認你已經邀請Line bot/Line Notify/Discord bot至你的伺服器及聊天室
 6. 盡情使用!
+
+### 系統需求
+
+* [ffmpeg](https://ffmpeg.org/download.html) - 你必須安裝ffmpeg，並將其路徑加入環境變數才可使用此機器人
 
 ### 關於 config.yml
 
@@ -378,19 +394,24 @@ Sync_channels:
 * [moviepy](https://github.com/Zulko/moviepy) 用來製作影片的縮圖
 * [pydub](https://github.com/jiaaro/pydub) 用來使用ffmpeg處理影音檔案
 
-### Code style and commits
+### 程式碼撰寫/提交規範
 
-* 100 characters per line
-* Use `snake_case` for variables and functions
-* Add a blank line at the end of the file
-* Optimize imports, remove the redundant ones
-* [Google style](https://google.github.io/styleguide/pyguide.html) TODO comments
-* Use [Sphinx Docstring](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html) style for docstrings
-* Use these headers for commits
+* 每行不超過100個字元
+* 使用 `snake_case` 命名變數及函式
+* 在檔案尾處加上一個空行
+* 最佳化程式碼並移除不必要的import
+* [Google style](https://google.github.io/styleguide/pyguide.html) TODO註解
+* 使用 [Sphinx Docstring](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html) 進行函式註解
+* 提交請求時請使用以下格式，並全英文撰寫
     - Update - your commit messages here
     - Fix bug - your commit messages here
     - Optimize - your commit messages here
     - Standardize - your commit messages here
+
+### 建議/問題回報
+
+如果你有任何建議或是發現了任何問題，請在 [Issues](https://github.com/HappyGroupHub/Ethereum-Wallet-Tracker/issues)
+提交你的意見，我會盡快回覆你!
 
 ### 版權
 
