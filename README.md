@@ -114,6 +114,7 @@ Sync_channels:
 
 Notes: If you can't add your Line bot to the group, please make sure you've checked `Allow bot to join group chats`
 option in your Line bot settings, which can be found in `Messaging API` > `LINE Official Account features` section.
+
 Notes: If you receive `Unfortunately, this account isn't set up to reply directly to messages.` after sending messages in Line chat, please make sure you've un-checked `Auto-reply messages` option in your Line bot settings, which can be found in `Messaging API` > `LINE Official Account features` section.
 
 #### - How to get Line Notify token
@@ -325,6 +326,7 @@ Sync_channels:
 
 注意: 如果你無法將你的Line bot加入群組，請確認你已經在 `Messaging API` > `LINE Official Account features`
 底下勾選 `Allow bot to join group chats` 這個選項
+
 注意: 如果你在傳送訊息後，Line bot回覆`Unfortunately, this account isn't set up to reply directly to messages.`，請確認你已經在 `Messaging API` > `LINE Official Account features`
 底下關閉 `Auto-reply messages` 這個選項
 
