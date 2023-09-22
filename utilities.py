@@ -17,14 +17,14 @@ def config_file_generator():
     """Generate the template of config file"""
     with open('config.yml', 'w', encoding="utf8") as f:
         f.write("""# ++--------------------------------++
-# | Discord-Line-Message-Sync v0.1.4 |
+# | Discord-Line-Message-Sync v0.1.6 |
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
 # Bot tokens and secrets
 # You will need to fill in the tokens and secrets for both your Line and Discord bots
 Line:
-  channel_access_token: '
+  channel_access_token: ''
   channel_secret: ''
 Discord:
   bot_token: ''
