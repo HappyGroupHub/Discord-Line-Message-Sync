@@ -1,5 +1,6 @@
 # Config File
 config.yml
+sync_channels.json
 
 # Downloaded Files
 downloads

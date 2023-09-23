@@ -35,10 +35,13 @@ async def on_message(message):
     """Handle message event."""
     if message.author == client.user:
         return
-    if message.author.id in config.get('discord_webhook_bot_ids'):
+    discord_webhook_bot_ids = utils.get_discord_webhook_bot_ids()
+    if message.author.id in discord_webhook_bot_ids:
         return
-    if message.channel.id in config.get('subscribed_discord_channels'):
-        sub_num = config.get('subscribed_discord_channels').index(message.channel.id) + 1
+    subscribed_discord_channels = utils.get_subscribed_discord_channels()
+    if message.channel.id in subscribed_discord_channels:
+        subscribed_info = utils.get_subscribed_info_by_discord_channel_id(str(message.channel.id))
+        sub_num = subscribed_info['sub_num']
         author = message.author.display_name
         if message.attachments:
             for attachment in message.attachments:
@@ -50,7 +53,8 @@ async def on_message(message):
                         message = f"{author}: 傳送了圖片"
                     else:
                         message = f"{author}: {message}(圖片)"
-                    line_notify.send_image_message(sub_num, message, image_file_path)
+                    line_notify.send_image_message(message, image_file_path,
+                                                   subscribed_info['line_notify_token'])
                 if attachment.filename.endswith(supported_video_format):
                     video_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
@@ -79,7 +83,7 @@ async def on_message(message):
                     pass
         else:
             message = message.clean_content
-            line_notify.send_message(sub_num, f"{author}: {message}")
+            line_notify.send_message(f"{author}: {message}", subscribed_info['line_notify_token'])
 
 
 def send_to_line_bot(msg_type, sub_num, author, message, video_url=None, thumbnail_url=None,

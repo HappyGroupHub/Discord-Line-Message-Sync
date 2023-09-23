@@ -1,5 +1,6 @@
 """This python file will handle some extra functions."""
 import datetime
+import json
 import os
 import subprocess
 import sys
@@ -28,18 +29,6 @@ Line:
   channel_secret: ''
 Discord:
   bot_token: ''
-
-# Sync channels
-# This part will need you to fill in both Line and Discord channel IDs to listen to
-# And line notify token, discord channel webhook to send messages.
-# These four sets of data will be used to sync messages between Line and Discord
-# You can create as many sets of channels as you want to sync
-Sync_channels:
-  1:
-    line_group_id: ''
-    line_notify_token: ''
-    discord_channel_id: ''
-    discord_channel_webhook: ''
 """
                 )
     sys.exit()
@@ -61,31 +50,11 @@ def read_config():
     try:
         with open('config.yml', 'r', encoding="utf8") as f:
             data = yaml.load(f, Loader=SafeLoader)
-            subscribed_line_channels: list = []
-            subscribed_discord_channels: List[int] = []
-            discord_webhook_bot_ids: List[int] = []
-            for i in range(1, len(data['Sync_channels']) + 1):
-                subscribed_line_channels.append(data['Sync_channels'][i]['line_group_id'])
-                subscribed_discord_channels.append(
-                    int(data['Sync_channels'][i]['discord_channel_id']))
-                discord_webhook_bot_ids.append(
-                    get_discord_webhook_bot_id(data['Sync_channels'][i]['discord_channel_webhook']))
             config = {
-                'subscribed_line_channels': subscribed_line_channels,
-                'subscribed_discord_channels': subscribed_discord_channels,
-                'discord_webhook_bot_ids': discord_webhook_bot_ids,
                 'line_channel_secret': data['Line']['channel_secret'],
                 'line_channel_access_token': data['Line']['channel_access_token'],
                 'discord_bot_token': data['Discord']['bot_token']
             }
-            for i in range(1, len(data['Sync_channels']) + 1):
-                config['line_group_id_' + str(i)] = data['Sync_channels'][i]['line_group_id']
-                config['line_notify_token_' + str(i)] = data['Sync_channels'][i][
-                    'line_notify_token']
-                config['discord_channel_id_' + str(i)] = data['Sync_channels'][i][
-                    'discord_channel_id']
-                config['discord_channel_webhook_' + str(i)] = data['Sync_channels'][i][
-                    'discord_channel_webhook']
             return config
     except (KeyError, TypeError):
         print(
@@ -94,13 +63,79 @@ def read_config():
         sys.exit()
 
 
-def get_discord_webhook_bot_id(webhook_url):
-    """Get discord webhook's bot id.
+def get_subscribed_discord_channels():
+    """Get subscribed discord channels.
 
-    :param str webhook_url: Discord webhook url.
-    :return int: Discord webhook's bot id.
+    :return list: Subscribed discord channels.
     """
-    return int(webhook_url.split('/')[-2])
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    subscribed_discord_channels = [int(entry['discord_channel_id']) for entry in data]
+    return subscribed_discord_channels
+
+
+def get_subscribed_line_channels():
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    subscribed_line_channels = [entry['line_group_id'] for entry in data]
+    return subscribed_line_channels
+
+
+def get_subscribed_info_by_discord_channel_id(discord_channel_id):
+    """Get subscribed info by discord channel id.
+
+    :param int discord_channel_id: Discord channel id.
+    :return dict: Subscribed info. Include line_group_id, line_notify_token, discord_channel_id,
+    discord_channel_webhook and sub_num.
+    """
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    for index, entry in enumerate(data):
+        if entry['discord_channel_id'] == discord_channel_id:
+            subscribed_info = entry.copy()
+            subscribed_info['sub_num'] = index + 1
+            return subscribed_info
+    return {}
+
+
+def get_subscribed_info_by_line_group_id(line_group_id):
+    """Get subscribed info by line group id.
+
+    :param str line_group_id: Line group id.
+    :return dict: Subscribed info. Include line_group_id, line_notify_token, discord_channel_id,
+    discord_channel_webhook and sub_num.
+    """
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    for index, entry in enumerate(data):
+        if entry['line_group_id'] == line_group_id:
+            subscribed_info = entry.copy()
+            subscribed_info['sub_num'] = index + 1
+            return subscribed_info
+    return {}
+
+
+def get_subscribed_info_by_sub_num(sub_num):
+    """Get subscribed info by sub num.
+
+    :param int sub_num: Subscribed sync channels num.
+    :return dict: Subscribed info. Include line_group_id, line_notify_token, discord_channel_id,
+    discord_channel_webhook and sub_num.
+    """
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    for index, entry in enumerate(data):
+        if index + 1 == sub_num:
+            subscribed_info = entry.copy()
+            subscribed_info['sub_num'] = index + 1
+            return subscribed_info
+    return {}
+
+
+def get_discord_webhook_bot_ids():
+    """Get discord webhook bot ids.
+
+    :return list: Discord webhook bot ids.
+    """
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    discord_channel_webhooks = [entry['discord_channel_webhook'] for entry in data]
+    discord_webhook_bot_ids = [int(webhook.split('/')[-2]) for webhook in discord_channel_webhooks]
+    return discord_webhook_bot_ids
 
 
 def download_file_from_url(sub_num, url, filename):
@@ -180,7 +215,8 @@ def convert_audio_to_m4a(audio_path, result_path=None):
     """
     if result_path is None:
         result_path = f'{os.path.splitext(audio_path)[0]}.m4a'
-    subprocess.run(f'ffmpeg -i {audio_path} -c:a aac -vn {result_path} -hide_banner -loglevel error')
+    subprocess.run(
+        f'ffmpeg -i {audio_path} -c:a aac -vn {result_path} -hide_banner -loglevel error')
     return result_path
 
 
