@@ -48,6 +48,26 @@ def callback():
     return 'OK'
 
 
+@app.route("/notify", methods=['POST'])
+def notify():
+    body = request.get_data(as_text=True)
+    log.info("Request body: %s", body)
+    auth_code = request.form.get('code')
+    group_id = request.form.get('state')
+
+    notify_token = line_notify.get_notify_token_by_auth_code(auth_code)
+    binding_code = utils.generate_binding_code(group_id, notify_token)
+    push_message = f"您已成功完成Line Notify綁定!\n" \
+                   f"現在請至欲同步的Discord頻道中, 輸入以下指令來完成綁定\n" \
+                   f"\n指令: /link {binding_code}\n" \
+                   f"\n請注意, 此綁定碼僅能使用一次, 並將於5分鐘後過期"
+    line_notify.send_message(push_message, notify_token)
+
+    show_message = f"Successfully connected to LINE Notify!\n" \
+                   f"You may now close this page."
+    return show_message
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     """Handle message event."""
@@ -61,7 +81,17 @@ def handle_message(event):
         subscribed_line_channels = utils.get_subscribed_line_channels()
         if message_received == '!ID':
             line_bot_api.reply_message(reply_token, TextSendMessage(text=group_id))
-        if group_id in subscribed_line_channels:
+        elif message_received == '!綁定':
+            if group_id in subscribed_line_channels:
+                reply_message = "此群組已綁定"
+            else:
+                auth_link = line_notify.create_auth_link(group_id)
+                reply_message = f"請先點擊下方連結進行Line Notify綁定!\n" \
+                                f"並在頁面中選擇此群組後, 點擊「同意並連動」\n" \
+                                f"完成綁定後, 系統將傳送一組Discord配對碼至此群組\n" \
+                                f"\n{auth_link}"
+            line_bot_api.reply_message(reply_token, TextSendMessage(text=reply_message))
+        elif group_id in subscribed_line_channels:
             subscribed_info = utils.get_subscribed_info_by_line_group_id(group_id)
             author = line_bot_api.get_group_member_profile(group_id, user_id).display_name
             author_image = line_bot_api.get_group_member_profile(group_id, user_id).picture_url

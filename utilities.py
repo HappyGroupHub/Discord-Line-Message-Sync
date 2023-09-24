@@ -2,10 +2,11 @@
 import datetime
 import json
 import os
+import random
 import subprocess
 import sys
+import time
 from os.path import exists
-from typing import List
 
 import requests
 import yaml
@@ -22,11 +23,19 @@ def config_file_generator():
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
+# Paste your endpoint for the webhook here.
+# You can use ngrok to get a free static endpoint now!
+# Find out more here: https://ngrok.com/
+webhook_url: ''
+
 # Bot tokens and secrets
-# You will need to fill in the tokens and secrets for both your Line and Discord bots
+# You will need to fill in the tokens and secrets for your Line, Line Notify and Discord bots
 Line:
   channel_access_token: ''
   channel_secret: ''
+Line_Notify:
+  client_id: ''
+  client_secret: ''
 Discord:
   bot_token: ''
 """
@@ -51,8 +60,11 @@ def read_config():
         with open('config.yml', 'r', encoding="utf8") as f:
             data = yaml.load(f, Loader=SafeLoader)
             config = {
+                'webhook_url': data['webhook_url'],
                 'line_channel_secret': data['Line']['channel_secret'],
                 'line_channel_access_token': data['Line']['channel_access_token'],
+                'line_notify_id': data['Line_Notify']['client_id'],
+                'line_notify_secret': data['Line_Notify']['client_secret'],
                 'discord_bot_token': data['Discord']['bot_token']
             }
             return config
@@ -74,6 +86,10 @@ def get_subscribed_discord_channels():
 
 
 def get_subscribed_line_channels():
+    if not exists('./sync_channels.json'):
+        with open('sync_channels.json', 'w', encoding="utf8") as file:
+            json.dump([], file, indent=4)
+            file.close()
     data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
     subscribed_line_channels = [entry['line_group_id'] for entry in data]
     return subscribed_line_channels
@@ -125,6 +141,25 @@ def get_subscribed_info_by_sub_num(sub_num):
             subscribed_info['sub_num'] = index + 1
             return subscribed_info
     return {}
+
+
+def add_new_sync_channel(line_group_id, line_notify_token, discord_channel_id,
+                         discord_channel_webhook):
+    """Add new sync channel.
+
+    :param str line_group_id: Line group id.
+    :param str line_notify_token: Line notify token.
+    :param int discord_channel_id: Discord channel id.
+    :param str discord_channel_webhook: Discord channel webhook.
+    """
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    data.append({
+        'line_group_id': line_group_id,
+        'line_notify_token': line_notify_token,
+        'discord_channel_id': discord_channel_id,
+        'discord_channel_webhook': discord_channel_webhook
+    })
+    update_json('sync_channels.json', data)
 
 
 def get_discord_webhook_bot_ids():
@@ -232,3 +267,45 @@ def get_audio_duration(audio_path, file_format='m4a'):
     audio = AudioSegment.from_file(audio_path, format=file_format)
     duration = audio.duration_seconds * 1000
     return duration
+
+
+def generate_binding_code(line_group_id, line_notify_token):
+    """Generate binding code.
+
+    :param str line_group_id: Line group id.
+    :param str line_notify_token: Line notify token.
+    :return str: Binding code.
+    """
+    if not os.path.exists('./binding_codes.json'):
+        with open('binding_codes.json', 'w', encoding="utf8") as file:
+            json.dump({}, file, indent=4)
+            file.close()
+    data = json.load(open('binding_codes.json', 'r', encoding="utf8"))
+    binding_code = str(random.randint(100000, 999999))
+    data[binding_code] = {'line_group_id': line_group_id, 'line_notify_token': line_notify_token,
+                          "expiration": time.time() + 300}
+    update_json('binding_codes.json', data)
+    return binding_code
+
+
+def get_binding_code_info(binding_code):
+    """Get binding code info.
+
+    :param str binding_code: Binding code.
+    :return dict: Binding code info. Include line_group_id, line_notify_token and expiration.
+    """
+    data = json.load(open('binding_codes.json', 'r', encoding="utf8"))
+    if binding_code in data:
+        return data[binding_code]
+    return {}
+
+
+def update_json(file, data):
+    """Update a json file.
+
+    :param str file: The file to update.
+    :param dict data: The data to update.
+    """
+    with open(file, 'w', encoding="utf8") as file:
+        json.dump(data, file, indent=4)
+        file.close()

@@ -3,15 +3,18 @@ import json
 import time
 
 import discord
-import zmq
 from discord import File
+from discord import app_commands
+from discord.ext import commands
+import zmq
+
 
 import line_notify
 import utilities as utils
 
 intents = discord.Intents.default()
 intents.message_content = True
-client = discord.Client(intents=intents)
+client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
@@ -28,6 +31,27 @@ config = utils.read_config()
 async def on_ready():
     """Initialize discord bot."""
     print("Bot is ready.")
+    try:
+        synced = await client.tree.sync()
+        print(f"Synced {synced} commands.")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
+
+
+@client.tree.command(name="link")
+@app_commands.describe(binding_code="輸入你的綁定碼")
+async def link(interaction: discord.Interaction, binding_code: str):
+    binding_info = utils.get_binding_code_info(binding_code)
+    if not binding_info:
+        reply_message = "綁定碼錯誤，請重新輸入..."
+    elif binding_info['expiration'] < time.time():
+        reply_message = "綁定碼已過期, 請重新於Line群組內輸入: !綁定"
+    else:
+        webhook = await interaction.channel.create_webhook(name="Line訊息同步")
+        utils.add_new_sync_channel(binding_info['line_group_id'], binding_info['line_notify_token'],
+                                   str(interaction.channel.id), webhook.url)
+        reply_message = "綁定成功！"
+    await interaction.response.send_message(reply_message)
 
 
 @client.event
