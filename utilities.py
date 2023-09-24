@@ -80,6 +80,11 @@ def get_subscribed_discord_channels():
 
     :return list: Subscribed discord channels.
     """
+    if not exists('./sync_channels.json'):
+        print("sync_channels.json not found, create one by default.")
+        with open('sync_channels.json', 'w', encoding="utf8") as file:
+            json.dump([], file, indent=4)
+            file.close()
     data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
     subscribed_discord_channels = [int(entry['discord_channel_id']) for entry in data]
     return subscribed_discord_channels
@@ -87,6 +92,7 @@ def get_subscribed_discord_channels():
 
 def get_subscribed_line_channels():
     if not exists('./sync_channels.json'):
+        print("sync_channels.json not found, create one by default.")
         with open('sync_channels.json', 'w', encoding="utf8") as file:
             json.dump([], file, indent=4)
             file.close()
@@ -143,11 +149,12 @@ def get_subscribed_info_by_sub_num(sub_num):
     return {}
 
 
-def add_new_sync_channel(line_group_id, line_notify_token, discord_channel_id,
+def add_new_sync_channel(line_group_id, line_group_name, line_notify_token, discord_channel_id,
                          discord_channel_webhook):
     """Add new sync channel.
 
     :param str line_group_id: Line group id.
+    :param str line_group_name: Line group name.
     :param str line_notify_token: Line notify token.
     :param int discord_channel_id: Discord channel id.
     :param str discord_channel_webhook: Discord channel webhook.
@@ -155,6 +162,7 @@ def add_new_sync_channel(line_group_id, line_notify_token, discord_channel_id,
     data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
     data.append({
         'line_group_id': line_group_id,
+        'line_group_name': line_group_name,
         'line_notify_token': line_notify_token,
         'discord_channel_id': discord_channel_id,
         'discord_channel_webhook': discord_channel_webhook
@@ -269,10 +277,11 @@ def get_audio_duration(audio_path, file_format='m4a'):
     return duration
 
 
-def generate_binding_code(line_group_id, line_notify_token):
+def generate_binding_code(line_group_id, line_group_name, line_notify_token):
     """Generate binding code.
 
     :param str line_group_id: Line group id.
+    :param str line_group_name: Line group name.
     :param str line_notify_token: Line notify token.
     :return str: Binding code.
     """
@@ -282,10 +291,21 @@ def generate_binding_code(line_group_id, line_notify_token):
             file.close()
     data = json.load(open('binding_codes.json', 'r', encoding="utf8"))
     binding_code = str(random.randint(100000, 999999))
-    data[binding_code] = {'line_group_id': line_group_id, 'line_notify_token': line_notify_token,
-                          "expiration": time.time() + 300}
+    data[binding_code] = {'line_group_id': line_group_id, 'line_group_name': line_group_name,
+                          'line_notify_token': line_notify_token, 'expiration': time.time() + 300}
     update_json('binding_codes.json', data)
     return binding_code
+
+
+def remove_binding_code(binding_code):
+    """Remove binding code from binding_codes.json.
+
+    :param str binding_code: Binding code.
+    """
+    data = json.load(open('binding_codes.json', 'r', encoding="utf8"))
+    if binding_code in data:
+        data.pop(binding_code)
+        update_json('binding_codes.json', data)
 
 
 def get_binding_code_info(binding_code):
@@ -307,5 +327,5 @@ def update_json(file, data):
     :param dict data: The data to update.
     """
     with open(file, 'w', encoding="utf8") as file:
-        json.dump(data, file, indent=4)
+        json.dump(data, file, indent=4, ensure_ascii=False)
         file.close()

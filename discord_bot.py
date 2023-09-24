@@ -43,15 +43,20 @@ async def on_ready():
 async def link(interaction: discord.Interaction, binding_code: str):
     binding_info = utils.get_binding_code_info(binding_code)
     if not binding_info:
-        reply_message = "綁定碼錯誤，請重新輸入..."
+        reply_message = "綁定失敗, 該綁定碼輸入錯誤或格式不正確, 請再試一次."
+        await interaction.response.send_message(reply_message, ephemeral=True)
     elif binding_info['expiration'] < time.time():
-        reply_message = "綁定碼已過期, 請重新於Line群組內輸入: !綁定"
+        utils.remove_binding_code(binding_code)
+        reply_message = "綁定失敗, 此綁定碼已逾5分鐘內無使用而過期, 請重新於Line群組內輸入: `!綁定`"
+        await interaction.response.send_message(reply_message, ephemeral=True)
     else:
         webhook = await interaction.channel.create_webhook(name="Line訊息同步")
-        utils.add_new_sync_channel(binding_info['line_group_id'], binding_info['line_notify_token'],
-                                   str(interaction.channel.id), webhook.url)
+        utils.add_new_sync_channel(binding_info['line_group_id'], binding_info['line_group_name'],
+                                   binding_info['line_notify_token'], str(interaction.channel.id),
+                                   webhook.url)
+        utils.remove_binding_code(binding_code)
         reply_message = "綁定成功！"
-    await interaction.response.send_message(reply_message)
+        await interaction.response.send_message(reply_message)
 
 
 @client.event

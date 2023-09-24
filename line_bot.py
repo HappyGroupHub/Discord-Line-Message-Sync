@@ -53,11 +53,12 @@ def notify():
     body = request.get_data(as_text=True)
     log.info("Request body: %s", body)
     auth_code = request.form.get('code')
-    group_id = request.form.get('state')
+    group_id = request.form.get('state').split('_')[0]
+    group_name = request.form.get('state').split('_')[1].replace("\\", "\\\\")
 
     notify_token = line_notify.get_notify_token_by_auth_code(auth_code)
-    binding_code = utils.generate_binding_code(group_id, notify_token)
-    push_message = f"您已成功完成Line Notify綁定!\n" \
+    binding_code = utils.generate_binding_code(group_id, group_name, notify_token)
+    push_message = f"\n此群組成功與Line Notify綁定!\n" \
                    f"現在請至欲同步的Discord頻道中, 輸入以下指令來完成綁定\n" \
                    f"\n指令: /link {binding_code}\n" \
                    f"\n請注意, 此綁定碼僅能使用一次, 並將於5分鐘後過期"
@@ -85,7 +86,9 @@ def handle_message(event):
             if group_id in subscribed_line_channels:
                 reply_message = "此群組已綁定"
             else:
-                auth_link = line_notify.create_auth_link(group_id)
+                group_name = line_bot_api.get_group_summary(group_id).group_name
+                line_notify_state = group_id + '_' + group_name
+                auth_link = line_notify.create_auth_link(line_notify_state)
                 reply_message = f"請先點擊下方連結進行Line Notify綁定!\n" \
                                 f"並在頁面中選擇此群組後, 點擊「同意並連動」\n" \
                                 f"完成綁定後, 系統將傳送一組Discord配對碼至此群組\n" \
@@ -161,16 +164,6 @@ def handle_audio(event):
             discord_webhook = SyncWebhook.from_url(subscribed_info['discord_channel_webhook'])
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
                                  avatar_url=author_image)
-
-
-def debug_json():
-    """Debug json.
-
-    :rtype json
-    """
-    body = request.get_data(as_text=True)
-    json_data = json.loads(body)
-    return json_data
 
 
 def receive_from_discord():

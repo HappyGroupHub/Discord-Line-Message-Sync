@@ -39,10 +39,10 @@ def send_image_message(message, image_path, notify_token):
                   headers=headers, data=data, files=files, timeout=5)
 
 
-def create_auth_link(group_id):
+def create_auth_link(state):
     """Create LINE Notify auth link for user to connect.
 
-    :param str group_id: The line group_id of the group.
+    :param str state: The state to pass to LINE Notify.
     :return str: The auth link.
     """
     data = {
@@ -50,7 +50,7 @@ def create_auth_link(group_id):
         'client_id': line_notify_id,
         'redirect_uri': webhook_url + '/notify',
         'scope': 'notify',
-        'state': group_id,
+        'state': state,
         'response_mode': 'form_post'
     }
     query_str = urllib.parse.urlencode(data)
