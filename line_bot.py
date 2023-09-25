@@ -54,14 +54,19 @@ def notify():
     log.info("Request body: %s", body)
     auth_code = request.form.get('code')
     group_id = request.form.get('state').split('_')[0]
-    group_name = request.form.get('state').split('_')[1].replace("\\", "\\\\")
+    group_name = request.form.get('state').split('_')[1]
 
     notify_token = line_notify.get_notify_token_by_auth_code(auth_code)
     binding_code = utils.generate_binding_code(group_id, group_name, notify_token)
-    push_message = f"\n此群組成功與Line Notify綁定!\n" \
-                   f"現在請至欲同步的Discord頻道中, 輸入以下指令來完成綁定\n" \
-                   f"\n指令: /link {binding_code}\n" \
-                   f"\n請注意, 此綁定碼僅能使用一次, 並將於5分鐘後過期"
+    push_message = f"\nLine Notify綁定成功！\n" \
+                   f"請至欲同步的Discord頻道中\n" \
+                   f"\n----------------------\n" \
+                   f"輸入以下指令來完成綁定\n" \
+                   f"/link {binding_code}\n" \
+                   f"----------------------\n" \
+                   f"\n※注意※\n" \
+                   f"此綁定碼僅能使用一次\n" \
+                   f"並將於5分鐘後過期"
     line_notify.send_message(push_message, notify_token)
 
     show_message = f"Successfully connected to LINE Notify!\n" \

@@ -150,13 +150,14 @@ def get_subscribed_info_by_sub_num(sub_num):
 
 
 def add_new_sync_channel(line_group_id, line_group_name, line_notify_token, discord_channel_id,
-                         discord_channel_webhook):
+                         discord_channel_name, discord_channel_webhook):
     """Add new sync channel.
 
     :param str line_group_id: Line group id.
     :param str line_group_name: Line group name.
     :param str line_notify_token: Line notify token.
     :param int discord_channel_id: Discord channel id.
+    :param str discord_channel_name: Discord channel name.
     :param str discord_channel_webhook: Discord channel webhook.
     """
     data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
@@ -165,6 +166,7 @@ def add_new_sync_channel(line_group_id, line_group_name, line_notify_token, disc
         'line_group_name': line_group_name,
         'line_notify_token': line_notify_token,
         'discord_channel_id': discord_channel_id,
+        'discord_channel_name': discord_channel_name,
         'discord_channel_webhook': discord_channel_webhook
     })
     update_json('sync_channels.json', data)

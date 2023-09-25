@@ -53,9 +53,23 @@ async def link(interaction: discord.Interaction, binding_code: str):
         webhook = await interaction.channel.create_webhook(name="Line訊息同步")
         utils.add_new_sync_channel(binding_info['line_group_id'], binding_info['line_group_name'],
                                    binding_info['line_notify_token'], str(interaction.channel.id),
-                                   webhook.url)
+                                   interaction.channel.name, webhook.url)
         utils.remove_binding_code(binding_code)
-        reply_message = "綁定成功！"
+        push_message = f"綁定成功！\n" \
+                       f"     ----------------------\n" \
+                       f"    |    Discord <> Line   |\n" \
+                       f"    |    訊息同步機器人   |\n" \
+                       f"     ----------------------\n\n" \
+                       f"Discord頻道：{interaction.channel.name}\n" \
+                       f"Line群組      ：{binding_info['line_group_name']}\n" \
+                       f"===================\n" \
+                       f"目前支援同步：文字訊息、圖片、影片、音訊"
+        reply_message = f"**【Discord <> Line 訊息同步機器人 - 綁定成功！】**\n\n" \
+                        f"Discord頻道：{interaction.channel.name}\n" \
+                        f"Line群組      ：{binding_info['line_group_name']}\n" \
+                        f"========================================\n" \
+                        f"目前支援同步：文字訊息、圖片、影片、音訊"
+        line_notify.send_message(push_message, binding_info['line_notify_token'])
         await interaction.response.send_message(reply_message)
 
 
