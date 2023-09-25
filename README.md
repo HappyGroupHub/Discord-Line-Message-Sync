@@ -48,7 +48,12 @@ Find it out by the following tutorial!
 3. Fill in the following required information, see [here](#About-configyml) for more details
 4. Now run `run.bat` to start the bot
 5. Make sure you've invited the bot to your Discord server and added it / Line Notify to your Line group
-6. Enjoy!
+6. In line group, send `!綁定` to stat the whole binding process, simply click the url the bot sent to you and follow
+   the
+   instructions
+7. After you've finished binding with Line Notify, you should receive a binding code, send `/link <binding_code>` to
+   the Discord channel you want to sync with
+8. Done! Enjoy the Discord <> Line messages syncing service!
 
 ### Dependencies
 
@@ -63,28 +68,34 @@ Find it out by the following tutorial!
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
+# Paste your endpoint for the webhook here.
+# You can use ngrok to get a free static endpoint now!
+# Find out more here: https://ngrok.com/
+webhook_url: ''
+
 # Bot tokens and secrets
-# You will need to fill in the tokens and secrets for both your Line and Discord bots
-Line:
+# You will need to fill in the tokens and secrets for your Line, Line Notify and Discord bots
+# Line bot: https://developers.line.biz/console/
+# Line Notify: https://notify-bot.line.me/my/services/
+# Discord bot: https://discord.com/developers/applications/
+Line_bot:
   channel_access_token: ''
   channel_secret: ''
+Line_Notify:
+  client_id: ''
+  client_secret: ''
 Discord:
   bot_token: ''
-
-# Sync channels
-# This part will need you to fill in both Line and Discord channel IDs to listen to
-# And line notify token, discord channel webhook to send messages.
-# These four sets of data will be used to sync messages between Line and Discord
-# You can create as many sets of channels as you want to sync
-Sync_channels:
-  1:
-    line_group_id: ''
-    line_notify_token: ''
-    discord_channel_id: ''
-    discord_channel_webhook: ''
 ```
 
-#### - How to get Line channel access token and secret
+### How to get Webhook URL and what is it?
+
+Basically, a webhook URL is an endpoint that other services can send us messages. In this case, we will use it to
+receive messages from Line and Discord, so the value of `webhook_url` should be the URL(with HTTPS) of your server.
+You can find out an easy way by using [ngrok](https://ngrok.com/), and here is
+a [tutorial](#Use-Ngrok-to-create-a-static-reverse-proxy) for it.
+
+### How to get Line channel access token and secret
 
 1. Go to [Line Developers](https://developers.line.biz/console/) and login with your Line account
 2. If you don't have a Business ID, simply create one by following the instructions
@@ -95,7 +106,33 @@ Sync_channels:
 7. You can now find your channel secret in Basic settings and channel access token in Message API, click `Issue` to copy
    it
 
-#### - How to get Discord bot token
+Notes: Please make sure you've **checked** `Allow bot to join group chats` option and **un-checked**
+`Auto-reply messages`in your Line bot settings, which can be found in `Messaging API` > `LINE Official Account features`
+section.
+
+### Setting up Line webhook
+
+1. Go to [Line Developers](https://developers.line.biz/console/) and login with your Line account
+2. Select your channel application
+3. Select Messaging API, find `Webhook URL` and click edit
+4. Fill in your webhook URL and add `/callback` at the end
+5. Click `Save` and it's pretty done!
+6. Remember to check `Use webhook` under the `Webhook URL` section
+
+Notes: Line webhook only works with HTTPS, so you need to use a reverse proxy to make it work.
+If you don't know how to create a reverse proxy, you can use [ngrok](https://ngrok.com/) to create one easily,
+find out how to use it [here](#Use-Ngrok-to-create-a-static-reverse-proxy).
+
+### How to get Line Notify client ID and secret
+
+1. Go to [Line Notify](https://notify-bot.line.me/my/services/) and login with your Line account
+2. Click `Add service`
+3. Fill in the service name with `【Discord訊息】`
+4. Fill in the Callback URL with your webhook URL and add `/notify` at the end
+5. Fill in other required information then click `Agree and continue`
+6. You can now find your client ID and secret at the top of the page
+
+### How to get Discord bot token
 
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications) and login with your Discord account
 2. Click `New Application`
@@ -105,63 +142,30 @@ Sync_channels:
 6. Check `Presence Intent`, `Server Members Intent` and `Message Content Intent` under `Privileged Gateway Intents`
 7. Now you can find your bot token in `Build-A-Bot` section, click `Reset Token` to copy it
 
-#### - How to get Line group ID
-
-1. Make sure you've added your Line bot to the group
-2. Run `run.bat` to start the bot (You have to fill up Bot tokens and secrets first)
-3. Send `!ID` to the group chat that you want to sync
-4. The bot will reply with the group ID, simply copy and paste it to `config.yml`
-
-Notes: If you can't add your Line bot to the group, please make sure you've checked `Allow bot to join group chats`
-option in your Line bot settings, which can be found in `Messaging API` > `LINE Official Account features` section.
-
-Notes: If you receive `Unfortunately, this account isn't set up to reply directly to messages.` after sending messages in Line chat, please make sure you've un-checked `Auto-reply messages` option in your Line bot settings, which can be found in `Messaging API` > `LINE Official Account features` section.
-
-#### - How to get Line Notify token
-
-1. Go to [Line Notify](https://notify-bot.line.me/my/) and login with your Line account
-2. Click `Generate Token`
-3. Enter `Discord Message` as token name and select a chat room
-4. Click `Generate`
-
-#### - How to get Discord channel ID
-
-1. Go to your Discord server
-2. Right-click on the channel you want to sync
-3. Click `Copy ID`
-
-Notes: If you didn't see `Copy ID` in the menu, you need to enable developer mode in Discord settings, which can be
-found in `Settings` > `Advanced` > `Developer Mode`
-
-#### - How to create a Discord channel webhook
-
-1. Go to your Discord server
-2. Right-click on the channel you want to create a webhook
-3. Click `Edit Channel` and find `Integrations` category
-4. Click `Create Webhook`
-
-### Setting up Line webhook
-
-1. Go to [Line Developers](https://developers.line.biz/console/) and login with your Line account
-2. Select your channel application
-3. Select Messaging API, find `Webhook URL` and click edit
-4. Fill in the URL of your Line bot and add `/callback` at the end
-5. Click `Save` and it's pretty done!
-6. Remember to check `Use webhook` under the `Webhook URL` section
-
-Notes: Line webhook only works with HTTPS, so you need to use a reverse proxy to make it work.
-If you don't know how to create a reverse proxy, you can use [ngrok](https://ngrok.com/) to create a temporary one.
-
-### Use Ngrok to create a reverse proxy
+### Use Ngrok to create a static reverse proxy
 
 1. Go to [Ngrok](https://ngrok.com) sign up for an account and login
-2. Find your auth token in [Dashboard](https://dashboard.ngrok.com/auth) and copy it
+2. Click `+ New Domain` at the [Domains Dashboard](https://dashboard.ngrok.com/cloud-edge/domains), copy the domain
+   name you created, which should be something like `sometihng-random-idontknow.ngrok-free.app`
 3. Download the latest version of ngrok from [here](https://ngrok.com/download)
-4. Extract the zip file and run `ngrok.exe`
-5. Run `ngrok authtoken <your_auth_token>` for first time use, it will save your auth token
-6. Run `ngrok http 5000` (5000 is the default port of the bot)
-7. Copy the URL from `Fowarding` then check
-   out [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync#Setting-up-Line-webhook)
+4. Extract the zip file you downloaded and run `ngrok.exe`
+5. Run `ngrok config edit`, it'll open up a text editor
+6. Replace the whole file with the following content
+    ```yaml
+    authtoken: <your_auth_token>
+    version: 2
+    tunnels:
+        app:
+            proto: http
+            hostname: <domain_name>
+            addr: 127.0.0.1:5000
+    ```
+    - Replace `<domain_name>` with the domain name you created at step 3
+    - Replace `<your_auth_token>` with your auth token, which can be found
+      at [here](https://dashboard.ngrok.com/get-started/your-authtoken)
+7. Now save the config file then run `ngrok start app` at the command line
+8. Copy the URL from `Fowarding`, it should be the same as the domain name you created at step 3
+9. Done! Now you can use this URL as your webhook URL
 
 ---
 
@@ -226,27 +230,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 目前支援同步的訊息種類:
 
-| Line -----傳送至----> Discord | 支援  |
-|:---------------------------|:---:|
-| 文字訊息                       | ☑️  |
-| 圖片                         | ☑️  |
-| 影片                         | ☑️  |
-| 音檔                         | ☑️  |
-| 檔案                         | ❌️  |
-| 貼圖                         | ❌️  |
-| 位置訊息                       | ❌️  |
-| 任何其他種類的訊息                  | ❌️  |
+| Line -----傳送至----> Discord | 支援 |
+|:---------------------------|:--:|
+| 文字訊息                       | ☑️ |
+| 圖片                         | ☑️ |
+| 影片                         | ☑️ |
+| 音檔                         | ☑️ |
+| 檔案                         | ❌️ |
+| 貼圖                         | ❌️ |
+| 位置訊息                       | ❌️ |
+| 任何其他種類的訊息                  | ❌️ |
 
-| Discord -----傳送至----> Line               | 支援  |
-|:-----------------------------------------|:---:|
-| 文字訊息                                     | ☑️  |
-| 圖片 (jpg, jpeg, png)                      | ☑️  | 
-| 影片 (mp4)                                 | ☑️  |
-| 音檔 (m4a, mp3, wav, aac, flac, ogg, opus) | ☑️  |
-| 其他種類的檔案                                  |  ❌  |
-| GIFs                                     |  ❌  |
-| 貼圖                                       |  ❌  |
-| 任何其他種類的訊息                                |  ❌  |
+| Discord -----傳送至----> Line               | 支援 |
+|:-----------------------------------------|:--:|
+| 文字訊息                                     | ☑️ |
+| 圖片 (jpg, jpeg, png)                      | ☑️ | 
+| 影片 (mp4)                                 | ☑️ |
+| 音檔 (m4a, mp3, wav, aac, flac, ogg, opus) | ☑️ |
+| 其他種類的檔案                                  | ❌  |
+| GIFs                                     | ❌  |
+| 貼圖                                       | ❌  |
+| 任何其他種類的訊息                                | ❌  |
 
 想要自己架設這個訊息同步機器人嗎?
 快點看看下面的使用教學吧!
@@ -262,7 +266,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 3. 遵照內文完成填寫 `config.yml`，請參考 [這裡](#關於-configyml)
 4. 運行 `run.bat`
 5. 確認你已經邀請Line bot/Line Notify/Discord bot至你的伺服器及聊天室
-6. 盡情使用!
+6. 在 Line 群組中，發送 `!綁定` 開始整個綁定流程，點擊機器人發送給你的 URL 並依照指示操作
+7. 當你完成 Line Notify 的綁定後，你將收到一個綁定代碼，請將 `/link <binding_code>` 發送到你想要同步的 Discord 頻道
+8. 完成！盡情享受 | Discord<>Line | 訊息同步服務吧！
 
 ### 系統需求
 
@@ -276,38 +282,68 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
+# Paste your endpoint for the webhook here.
+# You can use ngrok to get a free static endpoint now!
+# Find out more here: https://ngrok.com/
+webhook_url: ''
+
 # Bot tokens and secrets
-# You will need to fill in the tokens and secrets for both your Line and Discord bots
-Line:
+# You will need to fill in the tokens and secrets for your Line, Line Notify and Discord bots
+# Line bot: https://developers.line.biz/console/
+# Line Notify: https://notify-bot.line.me/my/services/
+# Discord bot: https://discord.com/developers/applications/
+Line_bot:
   channel_access_token: ''
   channel_secret: ''
+Line_Notify:
+  client_id: ''
+  client_secret: ''
 Discord:
   bot_token: ''
-
-# Sync channels
-# This part will need you to fill in both Line and Discord channel IDs to listen to
-# And line notify token, discord channel webhook to send messages.
-# These four sets of data will be used to sync messages between Line and Discord
-# You can create as many sets of channels as you want to sync
-Sync_channels:
-  1:
-    line_group_id: ''
-    line_notify_token: ''
-    discord_channel_id: ''
-    discord_channel_webhook: ''
 ```
 
-#### - 獲取 Line channel access token 及 secret
+### 什麼是 Webhook URL? 我該怎麼獲取它?
+
+簡單來說，Webhook URL 是其他服務可以用來將訊息發送給我們的端點網址。而我們將使用它來接收來自 Line 和 Discord
+的訊息，所以 `webhook_url` 的值應該是你伺服器的對外URL網址(需為HTTPS協議)。你可以使用 [ngrok](https://ngrok.com/)
+來簡單的達成此目標，請參考 [這裡的教學](#使用-Ngrok-建立符合-HTTPS-協議的端點網址)可以參考
+
+### 獲取 Line channel access token 及 secret
 
 1. 前往 [Line Developers](https://developers.line.biz/console/) 並使用你的Line帳號登入
-2. 如果你沒有Business ID，請按照官網的指示建立一個
+2. 如果你沒有 Business ID，請按照官網的指示建立一個
 3. 點擊 `Create a new provider`
 4. 填寫完需要的資料後點擊 `Create`
 5. 點擊 `Create a new channel` 並選擇 `Messaging API` 的分類
 6. 填寫完需要的資料後點擊 `Create`
 7. 現在你可以在 Basic settings 找到你的 `channel secret` 以及在 Message API 找到 `channel access token`，點擊 `Issue` 來複製
 
-#### - 獲取 Discord bot token
+註：請確保你在 Line 機器人設定中的 `Messaging API` > `LINE Official Account features`， **勾選**
+`Allow bot to join group chats` 選項，並 **取消勾選** `Auto-reply messages` 選項
+
+### 設定 Line Webhook
+
+1. 前往 [Line Developers](https://developers.line.biz/console/) 並使用你的Line帳號登入
+2. 點擊你要使用的 `channel application`
+3. 選擇 Messaging API 分類, 找到 `Webhook URL` 並點擊 `edit`
+4. 貼上你的 Webhook URL 並在尾處加上 `/callback`
+5. 點擊 `Save`
+6. 在 `Webhook URL` 底下勾選 `Use webhook`
+
+註：Line Webhook 僅適用於 `HTTPS` 協議，恕不接受任何未經認證過的網址
+如果你不知道如何申請，可以使用 [ngrok](https://ngrok.com/)
+創建一個簡單的導向服務，請參考 [這裡的教學](#使用-Ngrok-建立符合-HTTPS-協議的端點網址)
+
+### 獲取 Line Notify client ID 及 secret
+
+1. 前往 [Line Notify](https://notify-bot.line.me/my/services/)，並使用您的 Line 帳號登入
+2. 點擊 `Add service`
+3. 在 Service Name 欄位輸入 `【Discord訊息】`
+4. 在 Callback URL 欄位輸入您的 Webhook URL，並在尾處加上 `/notify`
+5. 填寫其他必要資訊，然後點擊 `Agree and continue`
+6. 您現在可以在頁面頂部找到您的客戶端 ID 和密鑰
+
+### 獲取 Discord bot token
 
 1. 前往 [Discord Developer Portal](https://discord.com/developers/applications) 並使用你的Discord帳號登入
 2. 點擊 `New Application`
@@ -317,62 +353,30 @@ Sync_channels:
 6. 在 `Privileged Gateway Intents` 底下將 `Presence Intent`, `Server Members Intent` 及 `Message Content Intent` 都打勾
 7. 現在你可以在 `Build-A-Bot` 底下找到你的 bot token，點擊 `Reset Token` 來複製
 
-#### - 獲取 Line group ID
-
-1. 確認你已經將你的Line bot加入到你想要同步的群組
-2. 運行 `run.bat` 來啟動機器人 (你必須先填寫機器人的token及secret)
-3. 在你想要同步的群組內傳送 `!ID`
-4. 機器人會回覆群組的ID，請將它複製並貼到 `config.yml` 中
-
-注意: 如果你無法將你的Line bot加入群組，請確認你已經在 `Messaging API` > `LINE Official Account features`
-底下勾選 `Allow bot to join group chats` 這個選項
-
-注意: 如果你在傳送訊息後，Line bot回覆`Unfortunately, this account isn't set up to reply directly to messages.`，請確認你已經在 `Messaging API` > `LINE Official Account features`
-底下關閉 `Auto-reply messages` 這個選項
-
-#### - 獲取 Line Notify token
-
-1. 前往 [Line Notify](https://notify-bot.line.me/my/) 並使用你的Line帳號登入
-2. 點擊 `發行權杖`
-3. 權杖名稱輸入 `Discord訊息` 並選擇你想同步的聊天室
-4. 點擊 `發行`
-
-#### - 獲取 Discord頻道 ID
-
-1. 前往你的Discord伺服器
-2. 右鍵點擊你想要同步的文字頻道
-3. 點擊 `複製ID`
-
-注意: 如果你沒有看到 `複製ID` 這個選項，請先在Discord的設定中啟用開發者模式，你可以在 `設定` > `進階` > `開發者模式` 中找到
-
-#### - 建立一個 Discord channel webhook
-
-1. 先進入你的Discord伺服器
-2. 右鍵點擊你想要建立 Webhook 的文字頻道
-3. 選擇 `編輯頻道` 並在裡面找到 `整合` 的分類
-4. 點擊 `建立 Webhook`
-
-### 設定Line Webhook
-
-1. 前往 [Line Developers](https://developers.line.biz/console/) 並使用你的Line帳號登入
-2. 點擊你要使用的 `channel application`
-3. 選擇 Messaging API 分類, 找到 `Webhook URL` 並點擊 `edit`
-4. 貼上你架設Line機器人的URL並在尾處加上 `/callback`
-5. 點擊 `Save`
-6. 在 `Webhook URL` 底下勾選 `Use webhook`
-
-注意! Line Webhook僅適用於 `HTTPS` 協議，恕不接受任何未經認證過的網址
-如果你不知道如何申請，可以使用[ngrok](https://ngrok.com/)創建一個簡單的導向服務
-
-### 使用Ngrok以符合HTTPS協議
+### 使用 Ngrok 建立符合 HTTPS 協議的端點網址
 
 1. 前往 [Ngrok](https://ngrok.com) 註冊一個帳號並登入
-2. 前往 [Dashboard](https://dashboard.ngrok.com/auth) 並複製你的 `authtoken`
-3. 從 [這裡](https://ngrok.com/download) 下載最新版本的主程式
-4. 解壓縮檔案並運行 `ngrok.exe`
-5. 執行 `ngrok authtoken <your_auth_token>` 來初次啟用服務，它會自動儲存你的認證碼
-6. 執行 `ngrok http 5000` (5000埠是預設的閘道)
-7. 複製 `Fowarding` 所生成的URL並查看 [這裡](#設定Line-Webhook)
+2. 在 [Domains Dashboard](https://dashboard.ngrok.com/cloud-edge/domains) 中點擊 `+ New Domain`
+   ，複製您所建立的網域名稱，成功的話應該會長這樣 `something-random-idontknow.ngrok-free.app`
+3. 從 [這裡](https://ngrok.com/download) 下載最新版本的 ngrok 程式
+4. 解壓縮你下載的 zip 檔案，然後執行 `ngrok.exe`
+5. 執行 `ngrok config edit`，它會打開一個文字編輯器
+6. 複製以下並完全替代原本的內容
+    ```yaml
+    authtoken: <your_auth_token>
+    version: 2
+    tunnels:
+        app:
+            proto: http
+            hostname: <domain_name>
+            addr: 127.0.0.1:5000
+    ```
+    - 把 `<domain_name>` 替換為您在步驟3所建立的網域名稱
+    - 把 `<your_auth_token>` 替換為您的授權金鑰，您可以在 [這裡](https://dashboard.ngrok.com/get-started/your-authtoken)
+      找到
+7. 現在儲存檔案並關閉，繼續在命令行中執行 `ngrok start app`
+8. 複製 `Fowarding` 所生成的URL，它應該與您在步驟3中創建的網域名稱相同
+9. 完成！現在你可以將此 URL 作為你的 Webhook URL
 
 ---
 
