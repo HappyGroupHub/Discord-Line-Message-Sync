@@ -19,7 +19,7 @@ def config_file_generator():
     """Generate the template of config file"""
     with open('config.yml', 'w', encoding="utf8") as f:
         f.write("""# ++--------------------------------++
-# | Discord-Line-Message-Sync v0.1.6 |
+# | Discord-Line-Message-Sync v0.2.0 |
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
@@ -30,13 +30,16 @@ webhook_url: ''
 
 # Bot tokens and secrets
 # You will need to fill in the tokens and secrets for your Line, Line Notify and Discord bots
-Line:
+# Line bot: https://developers.line.biz/console/
+# Line Notify: https://notify-bot.line.me/my/services/
+# Discord bot: https://discord.com/developers/applications/
+Line_bot:
   channel_access_token: ''
   channel_secret: ''
-Line_Notify:
+Line_notify:
   client_id: ''
   client_secret: ''
-Discord:
+Discord_bot:
   bot_token: ''
 """
                 )
@@ -61,11 +64,11 @@ def read_config():
             data = yaml.load(f, Loader=SafeLoader)
             config = {
                 'webhook_url': data['webhook_url'],
-                'line_channel_secret': data['Line']['channel_secret'],
-                'line_channel_access_token': data['Line']['channel_access_token'],
-                'line_notify_id': data['Line_Notify']['client_id'],
-                'line_notify_secret': data['Line_Notify']['client_secret'],
-                'discord_bot_token': data['Discord']['bot_token']
+                'line_channel_secret': data['Line_bot']['channel_secret'],
+                'line_channel_access_token': data['Line_bot']['channel_access_token'],
+                'line_notify_id': data['Line_notify']['client_id'],
+                'line_notify_secret': data['Line_notify']['client_secret'],
+                'discord_bot_token': data['Discord_bot']['bot_token']
             }
             return config
     except (KeyError, TypeError):
