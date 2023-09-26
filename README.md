@@ -1,3 +1,27 @@
+<div align="center">
+  <h1 id="Discord-Line-Message-Sync">
+    <a href="https://github.com/HappyGroupHub/Discord-Line-Message-Sync/" target="_blank">Discord / Line 訊息同步機器人</a>
+  </h1>
+
+[![Total Downloads](https://img.shields.io/github/downloads/HappyGroupHub/Discord-Line-Message-Sync/total?style=for-the-badge
+)](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases)
+[![Current Version](https://img.shields.io/github/v/release/HappyGroupHub/Discord-Line-Message-Sync?style=for-the-badge
+)](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases)
+[![LICENSE](https://img.shields.io/github/license/HappyGroupHub/Discord-Line-Message-Sync?style=for-the-badge
+)](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/blob/master/LICENSE)
+
+
+直接邀請機器人開始使用 | Invite Bots below to try it out！
+
+
+[Line Bot Invite Link](https://line.me/R/ti/p/@391udwqf?from=page&accountId=391udwqf)
+
+[Line Notify Invite Link](https://liff.line.me/1645278921-kWRPP32q/?accountId=linenotify)
+
+[Discord Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=1058723203578609684&permissions=8&scope=bot)
+
+</div>
+
 # Discord Line Message Sync
 
 📖 [繁體中文版README.md](#Discord-Line-訊息同步機器人) 📖
@@ -262,7 +286,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### 如何下載及運行
 
 1. 從 [這裡](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/releases) 下載最新的版本
-2. 解壓縮檔案後，於資料夾內開啟 `config.yml`, 建議使用[Notepad++](https://notepad-plus-plus.org/downloads/)來編輯檔案
+2. 解壓縮檔案後，於資料夾內開啟 `config.yml`, 建議使用 [Notepad++](https://notepad-plus-plus.org/downloads/)來編輯檔案
 3. 遵照內文完成填寫 `config.yml`，請參考 [這裡](#關於-configyml)
 4. 運行 `run.bat`
 5. 確認你已經邀請Line bot/Line Notify/Discord bot至你的伺服器及聊天室
@@ -306,7 +330,7 @@ Discord:
 
 簡單來說，Webhook URL 是其他服務可以用來將訊息發送給我們的端點網址。而我們將使用它來接收來自 Line 和 Discord
 的訊息，所以 `webhook_url` 的值應該是你伺服器的對外URL網址(需為HTTPS協議)。你可以使用 [ngrok](https://ngrok.com/)
-來簡單的達成此目標，請參考 [這裡的教學](#使用-Ngrok-建立符合-HTTPS-協議的端點網址)可以參考
+來簡單的達成此目標，請參考 [這裡的教學](#使用-Ngrok-建立符合-HTTPS-協議的端點網址)
 
 ### 獲取 Line channel access token 及 secret
 
