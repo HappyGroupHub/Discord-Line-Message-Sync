@@ -3,11 +3,10 @@ import json
 import time
 
 import discord
+import zmq
 from discord import File
 from discord import app_commands
 from discord.ext import commands
-import zmq
-
 
 import line_notify
 import utilities as utils
@@ -38,7 +37,7 @@ async def on_ready():
         print(f"Failed to sync commands: {e}")
 
 
-@client.tree.command(name="link")
+@client.tree.command(name="link", description="此指令用來與Line群組進行綁定, 並同步訊息")
 @app_commands.describe(binding_code="輸入你的綁定碼")
 async def link(interaction: discord.Interaction, binding_code: str):
     binding_info = utils.get_binding_code_info(binding_code)
@@ -71,6 +70,58 @@ async def link(interaction: discord.Interaction, binding_code: str):
                         f"目前支援同步：文字訊息、圖片、影片、音訊"
         line_notify.send_message(push_message, binding_info['line_notify_token'])
         await interaction.response.send_message(reply_message)
+
+
+@client.tree.command(name="unlink", description="此指令用來解除與Line群組的綁定, 並取消訊息同步")
+@app_commands.describe()
+async def unlink(interaction: discord.Interaction):
+    channel_id = str(interaction.channel.id)
+    subscribed_info = utils.get_subscribed_info_by_discord_channel_id(channel_id)
+    if not subscribed_info:
+        reply_message = "此頻道並未綁定任何Line群組！"
+        await interaction.response.send_message(reply_message, ephemeral=True)
+    else:
+        reply_message = f"**【Discord <> Line 訊息同步機器人 - 解除同步！】**\n\n" \
+                        f"Discord頻道：{subscribed_info['discord_channel_name']}\n" \
+                        f"Line群組      ：{subscribed_info['line_group_name']}\n" \
+                        f"========================================\n" \
+                        f"請問確定要解除同步嗎？"
+        await interaction.response.send_message(reply_message,
+                                                view=UnlinkConfirmation(subscribed_info),
+                                                ephemeral=True)
+
+
+class UnlinkConfirmation(discord.ui.View):
+    def __init__(self, subscribed_info):
+        super().__init__(timeout=20)
+        self.subscribed_info = subscribed_info
+
+    @discord.ui.button(label="⛓️ 確認解除同步", style=discord.ButtonStyle.danger)
+    async def unlink_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        utils.remove_sync_channel_by_discord_channel_id(self.subscribed_info['discord_channel_id'])
+        push_message = f"已解除同步！\n" \
+                       f"     ----------------------\n" \
+                       f"    |    Discord <> Line   |\n" \
+                       f"    |    訊息同步機器人   |\n" \
+                       f"     ----------------------\n\n" \
+                       f"Discord頻道：{self.subscribed_info['discord_channel_name']}\n" \
+                       f"Line群組      ：{self.subscribed_info['line_group_name']}\n" \
+                       f"===================\n" \
+                       f"執行者：{interaction.user.display_name}\n"
+        reply_message = f"**【Discord <> Line 訊息同步機器人 - 已解除同步！】**\n\n" \
+                        f"Discord頻道：{self.subscribed_info['discord_channel_name']}\n" \
+                        f"Line群組      ：{self.subscribed_info['line_group_name']}\n" \
+                        f"========================================\n" \
+                        f"執行者：{interaction.user.display_name}\n"
+        self.stop()
+        line_notify.send_message(push_message, self.subscribed_info['line_notify_token'])
+        await interaction.response.send_message(reply_message)
+
+    @discord.ui.button(label="取消操作", style=discord.ButtonStyle.primary)
+    async def unlink_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        reply_message = "操作已取消！"
+        self.stop()
+        await interaction.response.send_message(reply_message, ephemeral=True)
 
 
 @client.event

@@ -175,6 +175,18 @@ def add_new_sync_channel(line_group_id, line_group_name, line_notify_token, disc
     update_json('sync_channels.json', data)
 
 
+def remove_sync_channel_by_discord_channel_id(discord_channel_id):
+    """Remove sync channel by discord channel id.
+
+    :param int discord_channel_id: Discord channel id.
+    """
+    data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    for index, entry in enumerate(data):
+        if entry['discord_channel_id'] == discord_channel_id:
+            data.pop(index)
+            update_json('sync_channels.json', data)
+
+
 def get_discord_webhook_bot_ids():
     """Get discord webhook bot ids.
 
