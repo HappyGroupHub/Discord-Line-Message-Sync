@@ -141,7 +141,8 @@ async def on_message(message):
             for attachment in message.attachments:
                 if attachment.filename.endswith(supported_image_format):
                     message = message.clean_content
-                    image_file_path = utils.download_file_from_url(sub_num, attachment.url,
+                    image_file_path = utils.download_file_from_url(subscribed_info['folder_name'],
+                                                                   attachment.url,
                                                                    attachment.filename)
                     if message == '':
                         message = f"{author}: 傳送了圖片"
@@ -150,7 +151,8 @@ async def on_message(message):
                     line_notify.send_image_message(message, image_file_path,
                                                    subscribed_info['line_notify_token'])
                 if attachment.filename.endswith(supported_video_format):
-                    video_file_path = utils.download_file_from_url(sub_num, attachment.url,
+                    video_file_path = utils.download_file_from_url(subscribed_info['folder_name'],
+                                                                   attachment.url,
                                                                    attachment.filename)
                     thumbnail_path = utils.generate_thumbnail(video_file_path)
 
@@ -161,8 +163,8 @@ async def on_message(message):
                     await thumbnail_message.delete()
 
                     message = message.clean_content
-                    send_to_line_bot('video', sub_num, author, message, video_url=attachment.url,
-                                     thumbnail_url=thumbnail_url)
+                    send_to_line_bot('video', sub_num, author, message,
+                                     video_url=attachment.url, thumbnail_url=thumbnail_url)
                 if attachment.filename.endswith(supported_audio_format):
                     audio_file_path = utils.download_file_from_url(sub_num, attachment.url,
                                                                    attachment.filename)
@@ -170,8 +172,8 @@ async def on_message(message):
                         audio_file_path = utils.convert_audio_to_m4a(audio_file_path)
                     audio_duration = utils.get_audio_duration(audio_file_path)
                     message = message.clean_content
-                    send_to_line_bot('audio', sub_num, author, message, audio_url=attachment.url,
-                                     audio_duration=audio_duration)
+                    send_to_line_bot('audio', sub_num, author, message,
+                                     audio_url=attachment.url, audio_duration=audio_duration)
                 else:
                     # TODO(LD): Handle other file types.
                     pass

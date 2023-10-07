@@ -122,7 +122,7 @@ def handle_image(event):
             author = line_bot_api.get_group_member_profile(group_id, user_id).display_name
             author_image = line_bot_api.get_group_member_profile(group_id, user_id).picture_url
             source = line_bot_api.get_message_content(event.message.id)
-            file_path = utils.download_file_from_line(subscribed_info['sub_num'], source,
+            file_path = utils.download_file_from_line(subscribed_info['folder_name'], source,
                                                       event.message.type)
             discord_webhook = SyncWebhook.from_url(subscribed_info['discord_channel_webhook'])
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
@@ -143,7 +143,7 @@ def handle_video(event):
             author = line_bot_api.get_group_member_profile(group_id, user_id).display_name
             author_image = line_bot_api.get_group_member_profile(group_id, user_id).picture_url
             source = line_bot_api.get_message_content(event.message.id)
-            file_path = utils.download_file_from_line(subscribed_info['sub_num'], source,
+            file_path = utils.download_file_from_line(subscribed_info['folder_name'], source,
                                                       event.message.type)
             discord_webhook = SyncWebhook.from_url(subscribed_info['discord_channel_webhook'])
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",
@@ -164,7 +164,7 @@ def handle_audio(event):
             author = line_bot_api.get_group_member_profile(group_id, user_id).display_name
             author_image = line_bot_api.get_group_member_profile(group_id, user_id).picture_url
             source = line_bot_api.get_message_content(event.message.id)
-            file_path = utils.download_file_from_line(subscribed_info['sub_num'], source,
+            file_path = utils.download_file_from_line(subscribed_info['folder_name'], source,
                                                       event.message.type)
             discord_webhook = SyncWebhook.from_url(subscribed_info['discord_channel_webhook'])
             discord_webhook.send(file=File(file_path), username=f"{author} - (Line訊息)",

@@ -115,7 +115,6 @@ def get_subscribed_info_by_discord_channel_id(discord_channel_id):
     for index, entry in enumerate(data):
         if entry['discord_channel_id'] == discord_channel_id:
             subscribed_info = entry.copy()
-            subscribed_info['sub_num'] = index + 1
             return subscribed_info
     return {}
 
@@ -131,7 +130,6 @@ def get_subscribed_info_by_line_group_id(line_group_id):
     for index, entry in enumerate(data):
         if entry['line_group_id'] == line_group_id:
             subscribed_info = entry.copy()
-            subscribed_info['sub_num'] = index + 1
             return subscribed_info
     return {}
 
@@ -145,15 +143,14 @@ def get_subscribed_info_by_sub_num(sub_num):
     """
     data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
     for index, entry in enumerate(data):
-        if index + 1 == sub_num:
+        if entry['sub_num'] == sub_num:
             subscribed_info = entry.copy()
-            subscribed_info['sub_num'] = index + 1
             return subscribed_info
     return {}
 
 
-def add_new_sync_channel(line_group_id, line_group_name, line_notify_token, discord_channel_id,
-                         discord_channel_name, discord_channel_webhook):
+def add_new_sync_channel(line_group_id, line_group_name, line_notify_token,
+                         discord_channel_id, discord_channel_name, discord_channel_webhook):
     """Add new sync channel.
 
     :param str line_group_id: Line group id.
@@ -164,7 +161,15 @@ def add_new_sync_channel(line_group_id, line_group_name, line_notify_token, disc
     :param str discord_channel_webhook: Discord channel webhook.
     """
     data = json.load(open('sync_channels.json', 'r', encoding="utf8"))
+    if not data:
+        sub_num = 1
+    else:
+        max_dict = max(data, key=lambda x: x.get('sub_num', 0))
+        sub_num = max_dict.get('sub_num', 0) + 1
+    folder_name = f'{line_group_name}_{discord_channel_name}'
     data.append({
+        'sub_num': sub_num,
+        'folder_name': folder_name,
         'line_group_id': line_group_id,
         'line_group_name': line_group_name,
         'line_notify_token': line_notify_token,
@@ -198,18 +203,18 @@ def get_discord_webhook_bot_ids():
     return discord_webhook_bot_ids
 
 
-def download_file_from_url(sub_num, url, filename):
+def download_file_from_url(folder_name, url, filename):
     """Download file from url.
 
     Use to download any files from discord.
 
-    :param int sub_num: Subscribed sync channels num.
+    :param str folder_name: Folder name of downloaded files.
     :param url: url of file
     :param filename: filename of file
     :return str: file path
     """
     r = requests.get(url, allow_redirects=True, timeout=5)
-    path = f'./downloads/{sub_num}'
+    path = f'./downloads/{folder_name}'
     if not os.path.exists(path):
         os.makedirs(path)
     file_path = f'{path}/{datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")}_{filename}'
@@ -218,15 +223,14 @@ def download_file_from_url(sub_num, url, filename):
     return file_path
 
 
-def download_file_from_line(sub_num, source, message_type, file_name=None):
+def download_file_from_line(folder_name, source, message_type):
     """Get file binary and save them in PC.
 
     Use to download files from LINE.
 
-    :param int sub_num: Subscribed sync channels num.
+    :param str folder_name: Folder name of downloaded files.
     :param source: source of file that given by LINE
     :param message_type: message type from line
-    :param file_name: file name of file
     :return str: file path
     """
     file_type = {
@@ -234,7 +238,7 @@ def download_file_from_line(sub_num, source, message_type, file_name=None):
         'video': 'mp4',
         'audio': 'm4a',
     }
-    path = f'./downloads/{sub_num}'
+    path = f'./downloads/{folder_name}'
     if not os.path.exists(path):
         os.makedirs(path)
     file_path = \
