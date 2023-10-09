@@ -124,6 +124,36 @@ class UnlinkConfirmation(discord.ui.View):
         await interaction.response.send_message(reply_message, ephemeral=True)
 
 
+@client.tree.command(name="about", description="關於此機器人")
+@app_commands.describe()
+async def about(interaction: discord.Interaction):
+    subscribed_info = utils.get_subscribed_info_by_discord_channel_id(str(interaction.channel.id))
+    if subscribed_info:
+        sync_info = f"=======================================\n" \
+                    f"Discord頻道：{subscribed_info['discord_channel_name']}\n" \
+                    f"Line群組      ：{subscribed_info['line_group_name']}\n" \
+                    f"=======================================\n"
+    else:
+        sync_info = f"尚未綁定任何Line群組！\n"
+    about_command = (await client.tree.fetch_commands())[2].mention
+    embed_message = discord.Embed(title="Discord <> Line 訊息同步機器人",
+                                  description=f"一個協助你同步雙平台訊息的免費服務\n\n"
+                                              f"目前同步中的服務：\n"
+                                              f"{sync_info}\n"
+                                              f"此專案由 [樂弟](https://github.com/HappyGroupHub) 開發，"
+                                              f"並開源歡迎所有人共\n同維護。"
+                                              f"你可以使用指令 {about_command} 了解如何\n"
+                                              f"邀請並使用此機器人\n",
+                                  color=0x2ecc71)
+    embed_message.set_author(name=client.user.name, icon_url=client.user.avatar)
+    embed_message.add_field(name="作者", value="LD", inline=True)
+    embed_message.add_field(name="版本", value="v0.2.1", inline=True)
+    embed_message.add_field(name="程式原始碼",
+                            value="[Github](https://github.com/HappyGroupHub/Discord-Line-Message-Sync)",
+                            inline=True)
+    await interaction.response.send_message(embed=embed_message)
+
+
 @client.event
 async def on_message(message):
     """Handle message event."""
