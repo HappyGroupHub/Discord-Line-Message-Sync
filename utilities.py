@@ -19,9 +19,14 @@ def config_file_generator():
     """Generate the template of config file"""
     with open('config.yml', 'w', encoding="utf8") as f:
         f.write("""# ++--------------------------------++
-# | Discord-Line-Message-Sync v0.2.0 |
+# | Discord-Line-Message-Sync v0.2.1 |
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
+
+# Bot Owner
+# Fill in your name so others can know who is hosting the bot
+# This will be shown when someone types /about
+bot_owner: ''
 
 # Paste your endpoint for the webhook here.
 # You can use ngrok to get a free static endpoint now!
@@ -41,6 +46,15 @@ Line_notify:
   client_secret: ''
 Discord_bot:
   bot_token: ''
+
+
+# (Optional settings)
+# You can fill in your own bot invite link here
+# This will be shown when someone types /about
+# Noted that if you share your bot invite link, anyone can invite your bot to their server
+line_bot_invite_link: ''
+discord_bot_invite_link: ''
+
 """
                 )
     sys.exit()
@@ -63,6 +77,7 @@ def read_config():
         with open('config.yml', 'r', encoding="utf8") as f:
             data = yaml.load(f, Loader=SafeLoader)
             config = {
+                'bot_owner': data['bot_owner'],
                 'webhook_url': data['webhook_url'],
                 'line_channel_secret': data['Line_bot']['channel_secret'],
                 'line_channel_access_token': data['Line_bot']['channel_access_token'],
@@ -70,10 +85,15 @@ def read_config():
                 'line_notify_secret': data['Line_notify']['client_secret'],
                 'discord_bot_token': data['Discord_bot']['bot_token']
             }
+            if data['line_bot_invite_link']:
+                config['line_bot_invite_link'] = data['line_bot_invite_link']
+            if data['discord_bot_invite_link']:
+                config['discord_bot_invite_link'] = data['discord_bot_invite_link']
             return config
     except (KeyError, TypeError):
         print(
-            "An error occurred while reading config.yml, please check if the file is corrected filled.\n"
+            "An error occurred while reading config.yml, please check if the file is correctly filled.\n"
+            "Check out the latest release to see if there is any update.\n"
             "If the problem can't be solved, consider delete config.yml and restart the program.\n")
         sys.exit()
 
