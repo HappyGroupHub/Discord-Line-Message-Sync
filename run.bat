@@ -1,2 +1,2 @@
-start line_bot.exe /CONSOLE
-start discord_bot.exe /CONSOLE
+start line_bot.exe /CONSOLE pause
+start discord_bot.exe /CONSOLE pause
