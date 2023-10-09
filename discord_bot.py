@@ -48,14 +48,15 @@ async def about(interaction: discord.Interaction):
                     f"=======================================\n"
     else:
         sync_info = f"尚未綁定任何Line群組！\n"
-    help_command = (await client.tree.fetch_commands())[3].mention
+    all_commands = await client.tree.fetch_commands()
+    help_command = discord.utils.get(all_commands, name="help")
     embed_message = discord.Embed(title="Discord <> Line 訊息同步機器人",
                                   description=f"一個協助你同步雙平台訊息的免費服務\n\n"
                                               f"目前同步中的服務：\n"
                                               f"{sync_info}\n"
                                               f"此專案由 [樂弟](https://github.com/HappyGroupHub) 開發，"
                                               f"並開源歡迎所有人共\n同維護。"
-                                              f"你可以使用指令 {help_command} 了解如何\n使用此機器人\n",
+                                              f"你可以使用指令 {help_command.mention} 了解如何\n使用此機器人\n",
                                   color=0x2ecc71)
     embed_message.set_author(name=client.user.name, icon_url=client.user.avatar)
     embed_message.add_field(name="作者", value="LD", inline=True)
@@ -91,13 +92,16 @@ class AboutCommandView(discord.ui.View):
 @app_commands.describe()
 async def help(interaction: discord.Interaction):
     all_commands = await client.tree.fetch_commands()
+    about_command = discord.utils.get(all_commands, name="about")
+    link_command = discord.utils.get(all_commands, name="link")
+    unlink_command = discord.utils.get(all_commands, name="unlink")
     embed_message = discord.Embed(title="Discord <> Line 訊息同步機器人",
-                                  description=f"`1.` {all_commands[2].mention}｜關於機器人\n"
+                                  description=f"`1.` {about_command.mention}｜關於機器人\n"
                                               f"> 查看機器人的詳細資訊, 以及目前同步中的服務\n\n"
-                                              f"`2.` {all_commands[0].mention}｜綁定Line群組並開始同步\n"
+                                              f"`2.` {link_command.mention}｜綁定Line群組並開始同步\n"
                                               f"> 請確保你已邀請Line bot/Line Notify至群組中\n"
                                               f"> 並於群組中輸入 `!綁定` 來獲得Discord綁定碼\n\n"
-                                              f"`3.` {all_commands[1].mention}｜解除Line群組綁定並取消同步\n"
+                                              f"`3.` {unlink_command.mention}｜解除Line群組綁定並取消同步\n"
                                               f"> 解除與Line群組的綁定, 並取消訊息同步服務\n\n",
                                   color=0x2ecc71)
     embed_message.set_author(name=client.user.name, icon_url=client.user.avatar)
