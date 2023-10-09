@@ -92,6 +92,11 @@ Find it out by the following tutorial!
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
+# Bot Owner
+# Fill in your name so others can know who is hosting the bot
+# This will be shown when someone types /about
+bot_owner: ''
+
 # Paste your endpoint for the webhook here.
 # You can use ngrok to get a free static endpoint now!
 # Find out more here: https://ngrok.com/
@@ -105,11 +110,19 @@ webhook_url: ''
 Line_bot:
   channel_access_token: ''
   channel_secret: ''
-Line_Notify:
+Line_notify:
   client_id: ''
   client_secret: ''
-Discord:
+Discord_bot:
   bot_token: ''
+
+
+# (Optional settings)
+# You can fill in your own bot invite link here
+# This will be shown when someone types /about
+# Noted that if you share your bot invite link, anyone can invite your bot to their server
+line_bot_invite_link: ''
+discord_bot_invite_link: ''
 ```
 
 ### How to get Webhook URL and what is it?
@@ -306,6 +319,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 # | Made by LD (MIT License)         |
 # ++--------------------------------++
 
+# Bot Owner
+# Fill in your name so others can know who is hosting the bot
+# This will be shown when someone types /about
+bot_owner: ''
+
 # Paste your endpoint for the webhook here.
 # You can use ngrok to get a free static endpoint now!
 # Find out more here: https://ngrok.com/
@@ -319,11 +337,19 @@ webhook_url: ''
 Line_bot:
   channel_access_token: ''
   channel_secret: ''
-Line_Notify:
+Line_notify:
   client_id: ''
   client_secret: ''
-Discord:
+Discord_bot:
   bot_token: ''
+
+
+# (Optional settings)
+# You can fill in your own bot invite link here
+# This will be shown when someone types /about
+# Noted that if you share your bot invite link, anyone can invite your bot to their server
+line_bot_invite_link: ''
+discord_bot_invite_link: ''
 ```
 
 ### 什麼是 Webhook URL? 我該怎麼獲取它?
