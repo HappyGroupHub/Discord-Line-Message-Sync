@@ -18,7 +18,7 @@
 
 [Line Notify Invite Link](https://liff.line.me/1645278921-kWRPP32q/?accountId=linenotify)
 
-[Discord Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=1058723203578609684&permissions=8&scope=bot)
+[Discord Bot Invite Link](https://go.playfuni.net/InstallDCLineSyncBot)
 
 </div>
 
