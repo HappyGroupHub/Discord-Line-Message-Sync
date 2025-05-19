@@ -1,3 +1,27 @@
+# ⚠️ PROJECT ARCHIVED - LINE Notify Service Discontinued
+
+> **Important Notice**: This project has been archived as of 2025/04/01 due to LINE Notify shutting down their service. **This bot no longer functions** as it relied on LINE Notify for Discord-to-LINE message synchronization.
+
+## 🔄 Migrating to the New Project
+
+We've created a new and improved backup solution that focuses on **LINE to Discord message backup** (one-way sync):
+**[🔗 LINE-Backup-To-Discord](https://github.com/HappyGroupHub/LineBackupToDiscord)**
+
+**What changed:**
+- **From**: Bi-directional sync (Discord ↔ LINE)
+- **To**: One-way backup (LINE → Discord only)
+- **Better file support**: Added support for stickers, files and locations messages
+- **Enhanced reliability** - Simplified architecture for better stability
+
+**For Current Users/Developers**:
+- **The Services**: All previous users have automatically migrated to the new service.
+- **Source code**: The code for the old bot is still available for reference, but it is no longer working.
+- **New Repository**: [LINE-Backup-To-Discord](https://github.com/HappyGroupHub/LineBackupToDiscord)
+
+<div align="center">
+<img src="./readme_imgs/announcement.png" alt="Announcement" width="800">
+</div>
+
 <div align="center">
   <h1 id="Discord-Line-Message-Sync">
     <a href="https://github.com/HappyGroupHub/Discord-Line-Message-Sync/" target="_blank">Discord / Line 訊息同步機器人</a>
@@ -253,6 +277,31 @@ issue [here](https://github.com/HappyGroupHub/Discord-Line-Message-Sync/issues),
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
 ---
+
+# ⚠️ 專案已封存 - LINE Notify 服務終止
+
+> **重要通知**: 由於 LINE Notify 停止服務，此專案已於 2025/04/01 封存。**此機器人原碼已無法正常運作**
+
+## 🔄 遷移至新專案
+
+全新的備份解決方案，**LINE 至 Discord 訊息備份**（單向同步）：
+**[🔗 LINE-Backup-To-Discord](https://github.com/HappyGroupHub/LineBackupToDiscord)**
+
+**變更內容：**
+- **原先**：雙向同步 (Discord ↔ LINE)
+- **新版**：單向備份 (LINE → Discord)
+- **更好的訊息支援**：新增對貼圖、檔案和位置訊息的支援
+- **更好的運作系統** - 簡化架構以提高穩定性
+
+**對於現有使用者/開發者**：
+- **服務**：所有先前的使用者已自動遷移至新服務
+- **原始碼**：舊機器人的程式碼仍可供參考，但已無法正常運作
+- **新專案**：[LINE-Backup-To-Discord](https://github.com/HappyGroupHub/LineBackupToDiscord)
+
+<div align="center">
+<img src="./readme_imgs/announcement.png" alt="Announcement" width="800">
+</div>
+
 
 # Discord Line 訊息同步機器人
 
